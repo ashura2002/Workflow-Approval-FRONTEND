@@ -13,7 +13,7 @@ const Header: React.FC = () => {
                 <span className="text-white font-bold text-xl">A</span>
               </div>
               <span className="text-gray-800 font-semibold text-lg hidden sm:block">
-                AppName
+                Approvly
               </span>
             </a>
           </div>
