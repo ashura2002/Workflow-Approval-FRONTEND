@@ -1,24 +1,36 @@
 import React from "react";
 import Header from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
-// import { LoginPage } from "./pages/LoginPage";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
 
 const App: React.FC = () => {
+  const location = useLocation();
+  const isHomePage =
+    location.pathname === "/" || location.pathname === "/register";
+
   return (
     <div>
-      {/* <LoginPage /> */}
-      <header className="">
-        <Header />
-      </header>
+      {!isHomePage && (
+        <header>
+          <Header />
+        </header>
+      )}
 
       <div className="flex h-screen">
-        <aside className="w-64 bg-red-200">
-          <Sidebar />
-        </aside>
+        {!isHomePage && (
+          <aside className="w-64 bg-red-200">
+            <Sidebar />
+          </aside>
+        )}
 
-        <main className="overflow-y-auto border w-full bg-amber-500">
+        <main className="overflow-y-auto border w-full">
           <div>
-            Main Content <br /> ROUTER HERE lorem1000
+            <Routes>
+              <Route path="/" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+            </Routes>
           </div>
         </main>
       </div>
