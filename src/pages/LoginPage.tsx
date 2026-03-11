@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { FiEye, FiEyeOff } from "react-icons/fi"; // Make sure to install react-icons
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 export const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -41,7 +42,8 @@ export const LoginPage: React.FC = () => {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2
+               focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
               placeholder="Enter your username"
               required
             />
@@ -61,7 +63,8 @@ export const LoginPage: React.FC = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition pr-10"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg
+                 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition pr-10"
                 placeholder="••••••••"
                 required
               />
@@ -77,7 +80,8 @@ export const LoginPage: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 transform hover:scale-[1.02]"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold
+             py-2 px-4 rounded-lg transition duration-200 transform hover:scale-[1.02]"
           >
             Sign In
           </button>
@@ -85,9 +89,12 @@ export const LoginPage: React.FC = () => {
 
         <p className="text-center text-sm text-gray-500">
           Don't have an account?{" "}
-          <a href="#" className="text-indigo-600 hover:underline font-medium">
-            Sign up
-          </a>
+          <Link
+            to={"/register"}
+            className="text-indigo-600 hover:underline font-medium"
+          >
+            Sign Up
+          </Link>
         </p>
       </div>
     </div>
