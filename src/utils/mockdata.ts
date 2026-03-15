@@ -16,6 +16,7 @@ export const hompageCardData = [
   },
 ];
 
+//Mock Data for requests
 export const RequestMockData = [
   {
     id: 1,
@@ -44,5 +45,23 @@ export const RequestMockData = [
     startDate: "2026-03-25",
     endDate: "2026-03-26",
     leaveType: "Personal Leave",
+  },
+];
+
+// Mock analytics data
+export const recentActivity = [
+  { id: 1, action: "New leave request", user: "John Doe", time: "2 min ago" },
+  { id: 2, action: "Company added", user: "Jane Smith", time: "15 min ago" },
+  {
+    id: 3,
+    action: "Request approved",
+    user: "Mike Johnson",
+    time: "1 hour ago",
+  },
+  {
+    id: 4,
+    action: "New user registered",
+    user: "Sarah Lee",
+    time: "3 hours ago",
   },
 ];
