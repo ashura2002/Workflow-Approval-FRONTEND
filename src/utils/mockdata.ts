@@ -65,3 +65,12 @@ export const recentActivity = [
     time: "3 hours ago",
   },
 ];
+
+// Mock company data
+export const companyData = {
+  id: 1,
+  CompanyName: "Acme Corporation",
+  description:
+    "A leading global company dedicated to innovation and excellence in technology solutions. We pride ourselves on delivering cutting-edge products and services that help businesses transform and grow.",
+  totalUsers: 200,
+};
