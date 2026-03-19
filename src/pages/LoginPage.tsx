@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { axiosInstance } from "../utils/axiosInstance";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -8,16 +11,35 @@ export const LoginPage: React.FC = () => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [_, setMessage] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempted with:", formData);
+    try {
+      const res = await axiosInstance.post("/auth/login", {
+        username: formData.username,
+        password: formData.password,
+      });
+      toast.success(res.data.message || "Login Successfully!");
+      setFormData({
+        username: "",
+        password: "",
+      });
+      navigate("/register");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || "Login Failed";
+        toast.error(message);
+      } else {
+        setMessage("Something unexpected happened");
+      }
+    }
   };
 
   return (
@@ -86,7 +108,6 @@ export const LoginPage: React.FC = () => {
             Sign In
           </button>
         </form>
-
         <p className="text-center text-sm text-gray-500">
           Don't have an account?{" "}
           <Link
