@@ -1,61 +1,13 @@
 import React, { useState } from "react";
-
-interface RequestData {
-  id: number;
-  leaveType: string;
-  startDate: string;
-  endDate: string;
-  reason: string;
-  createdAt: string;
-  updatedAt: string;
-  status: "Pending" | "Approved" | "Rejected";
-  userId: number;
-  viewTo: string;
-  companyId: number;
-}
+import type { RequestData } from "../../types/RequestData.types";
+import { requestDataShape } from "../../utils/mockdata";
 
 export const EmployeeRequestHistory: React.FC = () => {
-  const [requests] = useState<RequestData[]>([
-    {
-      id: 17,
-      leaveType: "PersonalLeave",
-      startDate: "2024-10-28T00:00:00.000Z",
-      endDate: "2024-10-29T00:00:00.000Z",
-      reason: "leave 2",
-      createdAt: "2026-03-15T04:22:22.921Z",
-      updatedAt: "2026-03-15T04:22:22.921Z",
-      status: "Pending",
-      userId: 6,
-      viewTo: "DepartmentHead",
-      companyId: 2,
-    },
-    {
-      id: 18,
-      leaveType: "AnnualLeave",
-      startDate: "2026-03-20T00:00:00.000Z",
-      endDate: "2026-03-25T00:00:00.000Z",
-      reason: "Vacation",
-      createdAt: "2026-03-10T10:15:00.000Z",
-      updatedAt: "2026-03-12T14:30:00.000Z",
-      status: "Approved",
-      userId: 6,
-      viewTo: "DepartmentHead",
-      companyId: 2,
-    },
-    {
-      id: 19,
-      leaveType: "SickLeave",
-      startDate: "2026-03-19T00:00:00.000Z",
-      endDate: "2026-03-19T00:00:00.000Z",
-      reason: "Medical appointment",
-      createdAt: "2026-03-18T08:45:00.000Z",
-      updatedAt: "2026-03-18T08:45:00.000Z",
-      status: "Rejected",
-      userId: 6,
-      viewTo: "DepartmentHead",
-      companyId: 2,
-    },
-  ]);
+  const [requests, setRequests] = useState<RequestData[]>(requestDataShape);
+
+  const handleDelete = (id: number) => {
+    setRequests(requests.filter((request) => request.id !== id));
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -82,13 +34,40 @@ export const EmployeeRequestHistory: React.FC = () => {
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            Request History
-          </h1>
-          <p className="text-gray-600">
-            Track your leave and request submissions
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">
+              Request History
+            </h1>
+            <p className="text-gray-600">
+              Track your leave and request submissions
+            </p>
+          </div>
+
+          <div>
+            <button
+              className="inline-flex items-center gap-2
+               px-4 py-2 rounded-lg bg-red-50 text-red-600
+                hover:bg-red-100 border border-red-200 transition-all duration-200 font-medium text-sm hover:shadow-md"
+              title="Delete this request"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138
+                   21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+              Delete All
+            </button>
+          </div>
         </div>
 
         {/* Table Container */}
@@ -120,6 +99,9 @@ export const EmployeeRequestHistory: React.FC = () => {
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold">
                     Created Date
+                  </th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold">
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -161,6 +143,28 @@ export const EmployeeRequestHistory: React.FC = () => {
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {formatDate(request.createdAt)}
                     </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() => handleDelete(request.id)}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-all duration-200 font-medium text-sm hover:shadow-md"
+                        title="Delete this request"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -178,3 +182,6 @@ export const EmployeeRequestHistory: React.FC = () => {
     </div>
   );
 };
+
+// to do
+// get request by id
