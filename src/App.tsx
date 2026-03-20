@@ -11,6 +11,7 @@ import { AdminCompany } from "./pages/admin/adminCompany";
 import { EmployeeHomepage } from "./pages/employee/EmployeeHomepage";
 import { EmployeeRequest } from "./pages/employee/EmployeeRequest";
 import { EmployeeRequestHistory } from "./pages/employee/EmployeeRequestHistory";
+import { EmployeeRequestInfo } from "./pages/employee/EmployeeRequestInfo";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -51,6 +52,10 @@ const App: React.FC = () => {
               <Route
                 path="/employee-requests-history"
                 element={<EmployeeRequestHistory />}
+              />
+              <Route
+                path="/employee-request-details/:id"
+                element={<EmployeeRequestInfo />}
               />
             </Routes>
           </div>
