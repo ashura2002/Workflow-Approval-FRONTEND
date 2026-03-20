@@ -3,13 +3,14 @@ import { Cards } from "../../components/Cards";
 import { hompageCardData, recentActivity } from "../../utils/mockdata";
 
 export const AdminHomepage: React.FC = () => {
+  const name = "ASHURA";
   return (
     <div className="p-6 max-w-7xl mx-auto font-sans">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
         <p className="text-gray-500 mt-1">
-          Welcome back! Here's what's happening today.
+          Welcome back! {name} Here's what's happening today.
         </p>
       </div>
 

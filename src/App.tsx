@@ -8,6 +8,9 @@ import Sidebar from "./components/Sidebar";
 import { AdminRequests } from "./pages/admin/adminRequests";
 import { AdminUsermanagement } from "./pages/admin/adminUsermanagement";
 import { AdminCompany } from "./pages/admin/adminCompany";
+import { EmployeeHomepage } from "./pages/employee/EmployeeHomepage";
+import { EmployeeRequest } from "./pages/employee/EmployeeRequest";
+import { EmployeeRequestHistory } from "./pages/employee/EmployeeRequestHistory";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -34,13 +37,20 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
-
+              {/* ADMIN */}
               <Route path="/admin-homepage" element={<AdminHomepage />} />
               <Route path="/admin-requests" element={<AdminRequests />} />
               <Route path="/admin-company" element={<AdminCompany />} />
               <Route
                 path="/admin-user-management"
                 element={<AdminUsermanagement />}
+              />
+              {/* EMPLOYEE */}
+              <Route path="/employee-homepage" element={<EmployeeHomepage />} />
+              <Route path="/employee-requests" element={<EmployeeRequest />} />
+              <Route
+                path="/employee-requests-history"
+                element={<EmployeeRequestHistory />}
               />
             </Routes>
           </div>

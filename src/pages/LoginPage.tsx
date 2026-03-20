@@ -31,7 +31,8 @@ export const LoginPage: React.FC = () => {
         username: "",
         password: "",
       });
-      navigate("/register");
+      const decodedToken = res.data;
+      console.log(decodedToken);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || "Login Failed";
