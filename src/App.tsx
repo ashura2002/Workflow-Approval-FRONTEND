@@ -12,6 +12,7 @@ import { EmployeeHomepage } from "./pages/employee/EmployeeHomepage";
 import { EmployeeRequest } from "./pages/employee/EmployeeRequest";
 import { EmployeeRequestHistory } from "./pages/employee/EmployeeRequestHistory";
 import { EmployeeRequestInfo } from "./pages/employee/EmployeeRequestInfo";
+import { AdminArchivesRequest } from "./pages/admin/adminArchivesRequest";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -46,6 +47,11 @@ const App: React.FC = () => {
                 path="/admin-user-management"
                 element={<AdminUsermanagement />}
               />
+              <Route
+                path="/admin-archives-requests"
+                element={<AdminArchivesRequest />}
+              />
+
               {/* EMPLOYEE */}
               <Route path="/employee-homepage" element={<EmployeeHomepage />} />
               <Route path="/employee-requests" element={<EmployeeRequest />} />
