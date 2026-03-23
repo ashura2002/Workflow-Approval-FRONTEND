@@ -37,8 +37,10 @@ const App: React.FC = () => {
         <main className="overflow-y-auto w-full p-3">
           <div>
             <Routes>
+              {/* PUBLIC ROUTES */}
               <Route path="/" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              
               {/* ADMIN */}
               <Route path="/admin-homepage" element={<AdminHomepage />} />
               <Route path="/admin-requests" element={<AdminRequests />} />
