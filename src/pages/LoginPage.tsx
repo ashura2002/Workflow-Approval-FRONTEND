@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { axiosInstance } from "../utils/axiosInstance";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { jwtDecode } from "jwt-decode";
+import type { JwtTypes } from "../types/jwt.types";
+import type { Role } from "../types/role.enums";
 
 export const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -31,8 +34,13 @@ export const LoginPage: React.FC = () => {
         username: "",
         password: "",
       });
-      const decodedToken = res.data;
-      console.log(decodedToken);
+      const token = res.data.data;
+      const decoded = jwtDecode<JwtTypes>(token);
+      localStorage.setItem("userId", String(decoded.userId));
+      localStorage.setItem("email", decoded.email);
+      localStorage.setItem("role", decoded.role);
+      localStorage.setItem("companyId", String(decoded.companyId));
+      localStorage.setItem("username", decoded.username);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || "Login Failed";
