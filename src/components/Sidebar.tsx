@@ -1,12 +1,14 @@
 import { NavLink } from "react-router-dom";
 import { adminNavLinks } from "../utils/navlinks";
+import { useState } from "react";
 
 const Sidebar = () => {
+  const [role, _] = useState<string | null>(localStorage.getItem("role"));
   return (
     <aside className="w-64 h-screen bg-white text-gray-800 flex flex-col p-4 border-r border-gray-200">
       <div className="mb-8 px-2">
         {/* if admin role then admin dashboard if hr then hr dashboard */}
-        <h1 className="text-xl font-bold">Admin Dashboard</h1>
+        <h1 className="text-xl font-bold">{role} Dashboard</h1>
       </div>
 
       <nav className="flex-1 space-y-1">

@@ -13,6 +13,8 @@ import { EmployeeRequest } from "./pages/employee/EmployeeRequest";
 import { EmployeeRequestHistory } from "./pages/employee/EmployeeRequestHistory";
 import { EmployeeRequestInfo } from "./pages/employee/EmployeeRequestInfo";
 import { AdminArchivesRequest } from "./pages/admin/adminArchivesRequest";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -40,7 +42,7 @@ const App: React.FC = () => {
               {/* PUBLIC ROUTES */}
               <Route path="/" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
-              
+
               {/* ADMIN */}
               <Route path="/admin-homepage" element={<AdminHomepage />} />
               <Route path="/admin-requests" element={<AdminRequests />} />
