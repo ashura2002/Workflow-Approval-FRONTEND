@@ -6,7 +6,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
 import type { JwtTypes } from "../types/jwt.types";
-import type { Role } from "../types/role.enums";
 
 export const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -41,6 +40,15 @@ export const LoginPage: React.FC = () => {
       localStorage.setItem("role", decoded.role);
       localStorage.setItem("companyId", String(decoded.companyId));
       localStorage.setItem("username", decoded.username);
+      if (
+        decoded.role === "Admin" ||
+        decoded.role === "HR" ||
+        decoded.role === "DepartmentHead"
+      ) {
+        navigate("/admin-homepage");
+      } else {
+        navigate("/register");
+      }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message || "Login Failed";
