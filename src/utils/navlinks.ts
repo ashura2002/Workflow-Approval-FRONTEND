@@ -5,7 +5,7 @@ import {
   Home,
   MailCheck,
   Newspaper,
-  NewspaperIcon,
+  NotepadTextDashed,
   Users,
 } from "lucide-react";
 
@@ -52,11 +52,11 @@ export const employeeLinks = [
   {
     linkName: "Requests History",
     path: "/employee-requests-history",
-    icon: NewspaperIcon,
+    icon: NotepadTextDashed,
   },
   {
     linkName: "Company",
-    path: "/sds",
+    path: "/employee-company",
     icon: Building2Icon,
   },
 ];

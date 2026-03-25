@@ -1,36 +1,36 @@
 import React from "react";
-import { FiUser, FiLogOut } from "react-icons/fi"; // Optional icons
+import { FiUser, FiLogOut } from "react-icons/fi";
 
 const Header: React.FC = () => {
   return (
-    <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex">
-            <a href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">A</span>
+          <div className="flex items-center">
+            <a href="/" className="flex items-center gap-2 group">
+              <div className="w-8 h-8 bg-linear-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shadow-md transition-transform group-hover:scale-105">
+                <span className="text-white font-bold text-lg">A</span>
               </div>
-              <span className="text-gray-800 font-semibold text-lg hidden sm:block">
+              <span className=" font-semibold text-lg hidden sm:block bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 Approvly
               </span>
             </a>
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center space-x-3">
-            <button className="p-2 text-gray-500 hover:text-indigo-600 rounded-full hover:bg-gray-100 transition">
+          <div className="flex items-center gap-2">
+            <button className="relative p-2 text-gray-500 hover:text-indigo-600 rounded-full hover:bg-gray-100/80 transition-all duration-200">
               <FiUser size={20} />
             </button>
-            <button className="p-2 text-gray-500 hover:text-indigo-600 rounded-full hover:bg-gray-100 transition">
+            <button className="p-2 text-gray-500 hover:text-indigo-600 rounded-full hover:bg-gray-100/80 transition-all duration-200">
               <FiLogOut size={20} />
             </button>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button (kept for design, no new functionality) */}
           <div className="md:hidden flex items-center">
-            <button className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
+            <button className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100/80 focus:outline-none transition-colors">
               <svg
                 className="h-6 w-6"
                 xmlns="http://www.w3.org/2000/svg"
