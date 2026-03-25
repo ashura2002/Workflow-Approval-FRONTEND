@@ -15,6 +15,7 @@ import { EmployeeRequestInfo } from "./pages/employee/EmployeeRequestInfo";
 import { AdminArchivesRequest } from "./pages/admin/adminArchivesRequest";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import { EmployeeCompany } from "./pages/employee/EmployeeCompany";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -67,6 +68,7 @@ const App: React.FC = () => {
                 path="/employee-request-details/:id"
                 element={<EmployeeRequestInfo />}
               />
+              <Route path="/employee-company" element={<EmployeeCompany />} />
             </Routes>
           </div>
         </main>
