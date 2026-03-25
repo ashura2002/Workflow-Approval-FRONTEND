@@ -47,7 +47,7 @@ export const LoginPage: React.FC = () => {
       ) {
         navigate("/admin-homepage");
       } else {
-        navigate("/register");
+        navigate("/employee-homepage");
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {

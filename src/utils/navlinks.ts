@@ -1,4 +1,13 @@
-import { Archive, Building2, Home, MailCheck, Users } from "lucide-react";
+import {
+  Archive,
+  Building2,
+  Building2Icon,
+  Home,
+  MailCheck,
+  Newspaper,
+  NewspaperIcon,
+  Users,
+} from "lucide-react";
 
 export const adminNavLinks = [
   {
@@ -31,11 +40,23 @@ export const adminNavLinks = [
 export const employeeLinks = [
   {
     linkName: "Home",
+    path: "/employee-homepage",
+    icon: Home,
   },
   {
     linkName: "Requests",
+    path: "/employee-requests",
+    icon: Newspaper,
+  },
+
+  {
+    linkName: "Requests History",
+    path: "/employee-requests-history",
+    icon: NewspaperIcon,
   },
   {
     linkName: "Company",
+    path: "/sds",
+    icon: Building2Icon,
   },
 ];
