@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { adminNavLinks } from "../utils/navlinks";
+import { adminNavLinks, employeeLinks } from "../utils/navlinks";
 import { useState } from "react";
 
 const Sidebar = () => {
   const [role, _] = useState<string | null>(localStorage.getItem("role"));
+
   return (
     <aside className="w-64 h-screen bg-white text-gray-800 flex flex-col p-4 border-r border-gray-200">
       <div className="mb-8 px-2">
@@ -12,22 +13,45 @@ const Sidebar = () => {
       </div>
 
       <nav className="flex-1 space-y-1">
-        {adminNavLinks.map((item) => (
-          <NavLink
-            key={item.linkName}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                isActive
-                  ? "bg-blue-100 text-blue-700"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-              }`
-            }
-          >
-            <item.icon size={20} />
-            <span>{item.linkName}</span>
-          </NavLink>
-        ))}
+        {role === "Employee" ? (
+          <>
+            {employeeLinks.map((item) => (
+              <NavLink
+                key={item.linkName}
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-blue-100 text-blue-700"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  }`
+                }
+              >
+                <item.icon size={20} />
+                <span>{item.linkName}</span>
+              </NavLink>
+            ))}
+          </>
+        ) : (
+          <>
+            {adminNavLinks.map((item) => (
+              <NavLink
+                key={item.linkName}
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-blue-100 text-blue-700"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  }`
+                }
+              >
+                <item.icon size={20} />
+                <span>{item.linkName}</span>
+              </NavLink>
+            ))}
+          </>
+        )}
       </nav>
 
       <div className="px-2 pt-4 border-t border-gray-200">

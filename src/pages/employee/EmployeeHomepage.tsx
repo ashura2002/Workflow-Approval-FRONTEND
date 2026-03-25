@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-type EmployeeHomepageProps = {
-  name?: string;
-};
-
-export const EmployeeHomepage: React.FC<EmployeeHomepageProps> = ({
-  name = "Employee",
-}) => {
+export const EmployeeHomepage: React.FC = () => {
+  const [name, _] = useState<string | null>(localStorage.getItem("username"));
   const [time, setTime] = useState(() => new Date());
 
   useEffect(() => {
