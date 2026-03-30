@@ -1,7 +1,15 @@
 import React from "react";
 import { FiUser, FiLogOut } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
+
+  const logout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,7 +31,10 @@ const Header: React.FC = () => {
             <button className="relative p-2 text-gray-500 hover:text-indigo-600 rounded-full hover:bg-gray-100/80 transition-all duration-200">
               <FiUser size={20} />
             </button>
-            <button className="p-2 text-gray-500 hover:text-indigo-600 rounded-full hover:bg-gray-100/80 transition-all duration-200">
+            <button
+              onClick={logout}
+              className="p-2 text-gray-500 hover:text-indigo-600 rounded-full hover:bg-gray-100/80 transition-all duration-200"
+            >
               <FiLogOut size={20} />
             </button>
           </div>
