@@ -13,9 +13,8 @@ import { EmployeeRequest } from "./pages/employee/EmployeeRequest";
 import { EmployeeRequestHistory } from "./pages/employee/EmployeeRequestHistory";
 import { EmployeeRequestInfo } from "./pages/employee/EmployeeRequestInfo";
 import { AdminArchivesRequest } from "./pages/admin/adminArchivesRequest";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { AuthProvider } from "./context/AuthContext";
 import { EmployeeCompany } from "./pages/employee/EmployeeCompany";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -45,30 +44,98 @@ const App: React.FC = () => {
               <Route path="/register" element={<RegisterPage />} />
 
               {/* ADMIN */}
-              <Route path="/admin-homepage" element={<AdminHomepage />} />
-              <Route path="/admin-requests" element={<AdminRequests />} />
-              <Route path="/admin-company" element={<AdminCompany />} />
+              <Route
+                path="/admin-homepage"
+                element={
+                  <ProtectedRoute
+                    roles={["Admin", "HR", "DepartmentHead"]}
+                    element={<AdminHomepage />}
+                  />
+                }
+              />
+              <Route
+                path="/admin-requests"
+                element={
+                  <ProtectedRoute
+                    roles={["Admin", "HR", "DepartmentHead"]}
+                    element={<AdminRequests />}
+                  />
+                }
+              />
+              <Route
+                path="/admin-company"
+                element={
+                  <ProtectedRoute
+                    roles={["Admin", "HR", "DepartmentHead"]}
+                    element={<AdminCompany />}
+                  />
+                }
+              />
               <Route
                 path="/admin-user-management"
-                element={<AdminUsermanagement />}
+                element={
+                  <ProtectedRoute
+                    roles={["Admin", "HR", "DepartmentHead"]}
+                    element={<AdminUsermanagement />}
+                  />
+                }
               />
               <Route
                 path="/admin-archives-requests"
-                element={<AdminArchivesRequest />}
+                element={
+                  <ProtectedRoute
+                    roles={["Admin", "HR", "DepartmentHead"]}
+                    element={<AdminArchivesRequest />}
+                  />
+                }
               />
 
               {/* EMPLOYEE */}
-              <Route path="/employee-homepage" element={<EmployeeHomepage />} />
-              <Route path="/employee-requests" element={<EmployeeRequest />} />
+              <Route
+                path="/employee-homepage"
+                element={
+                  <ProtectedRoute
+                    roles="Employee"
+                    element={<EmployeeHomepage />}
+                  />
+                }
+              />
+              <Route
+                path="/employee-requests"
+                element={
+                  <ProtectedRoute
+                    roles="Employee"
+                    element={<EmployeeRequest />}
+                  />
+                }
+              />
               <Route
                 path="/employee-requests-history"
-                element={<EmployeeRequestHistory />}
+                element={
+                  <ProtectedRoute
+                    roles="Employee"
+                    element={<EmployeeRequestHistory />}
+                  />
+                }
               />
               <Route
                 path="/employee-request-details/:id"
-                element={<EmployeeRequestInfo />}
+                element={
+                  <ProtectedRoute
+                    roles="Employee"
+                    element={<EmployeeRequestInfo />}
+                  />
+                }
               />
-              <Route path="/employee-company" element={<EmployeeCompany />} />
+              <Route
+                path="/employee-company"
+                element={
+                  <ProtectedRoute
+                    roles="Employee"
+                    element={<EmployeeCompany />}
+                  />
+                }
+              />
             </Routes>
           </div>
         </main>

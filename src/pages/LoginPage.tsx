@@ -6,8 +6,10 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
 import type { JwtTypes } from "../types/jwt.types";
+import { useAuth } from "../context/AuthContext";
 
 export const LoginPage: React.FC = () => {
+  const auth = useAuth();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -34,12 +36,8 @@ export const LoginPage: React.FC = () => {
         password: "",
       });
       const token = res.data.data;
+      auth.login(token);
       const decoded = jwtDecode<JwtTypes>(token);
-      localStorage.setItem("userId", String(decoded.userId));
-      localStorage.setItem("email", decoded.email);
-      localStorage.setItem("role", decoded.role);
-      localStorage.setItem("companyId", String(decoded.companyId));
-      localStorage.setItem("username", decoded.username);
       if (
         decoded.role === "Admin" ||
         decoded.role === "HR" ||

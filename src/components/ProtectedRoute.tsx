@@ -1,29 +1,27 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import type { ReactElement } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-interface ProtectedRouteProps {
-  element: React.ReactElement;
-  allowedRoles?: string[];
-}
+type ProtectedRouteProps = {
+  element: ReactElement;
+  roles?: string | string[];
+  fallbackPath?: string;
+};
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+export const ProtectedRoute = ({
   element,
-  allowedRoles,
-}) => {
-  const { isAuthenticated, user } = useAuth();
+  roles,
+  fallbackPath = "/",
+}: ProtectedRouteProps) => {
+  const auth = useAuth();
+  const location = useLocation();
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+  if (!auth.isAuthenticated) {
+    return <Navigate to={fallbackPath} state={{ from: location }} replace />;
   }
 
-  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-    return (
-      <Navigate
-        to={user.role === "Admin" ? "/admin-homepage" : "/employee-homepage"}
-        replace
-      />
-    );
+  if (roles && !auth.hasRole(roles)) {
+    return <Navigate to={fallbackPath} state={{ from: location }} replace />;
   }
 
   return element;
