@@ -1,4 +1,7 @@
+import axios from "axios";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { axiosInstance } from "../../utils/axiosInstance";
 
 interface RequestFormData {
   startDate: string;
@@ -15,6 +18,8 @@ export const EmployeeRequest: React.FC = () => {
     leaveType: "",
   });
 
+  const [isLoading, setIsloading] = useState<boolean>(false);
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -27,10 +32,39 @@ export const EmployeeRequest: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsloading(true);
     console.log("Form Data:", formData);
-    // Add your submission logic here
+    try {
+      const res = await axiosInstance.post("/requests", formData);
+      console.log(res);
+      toast.success("Leave request submitted successfully!");
+      setFormData({
+        startDate: "",
+        endDate: "",
+        reason: "",
+        leaveType: "",
+      });
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const errorData = error.response?.data;
+        let message = "Failed to submit form";
+
+        // Handle array of messages
+        if (Array.isArray(errorData?.message)) {
+          message = errorData.message.join(", ");
+        }
+        // Handle string message
+        else if (typeof errorData?.message === "string") {
+          message = errorData.message;
+        }
+
+        toast.error(message);
+      }
+    } finally {
+      setIsloading(false);
+    }
   };
 
   return (
@@ -178,9 +212,10 @@ export const EmployeeRequest: React.FC = () => {
                   className="w-full px-4 py-3 bg-gray-50/80 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all duration-200 text-gray-900"
                 >
                   <option value="">Select a leave type</option>
-                  <option value="annual">Annual Leave</option>
-                  <option value="sick">Sick Leave</option>
-                  <option value="personal">Personal Leave</option>
+                  <option value="EmergencyLeave">Emergency Leave</option>
+                  <option value="SickLeave">Sick Leave</option>
+                  <option value="PersonalLeave">Personal Leave</option>
+                  <option value="Others">Others</option>
                 </select>
               </div>
 
@@ -209,10 +244,11 @@ export const EmployeeRequest: React.FC = () => {
               {/* Button Group */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <button
+                  disabled={isLoading}
                   type="submit"
                   className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
-                  ✓ Submit Request
+                  {isLoading ? "Loading..." : "✓ Submit Request"}
                 </button>
                 <button
                   type="reset"
@@ -228,3 +264,5 @@ export const EmployeeRequest: React.FC = () => {
     </div>
   );
 };
+
+// integrate get all my request history endpoints
