@@ -1,13 +1,33 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { FiUser, FiLogOut } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { LogoutConfirmation } from "./LogoutConfirmation";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const [isModalShow, setIsModalShow] = useState<boolean>(false);
 
-  const logout = () => {
-    localStorage.clear();
-    navigate("/");
+  const openLogoutModal = () => {
+    setIsModalShow(true);
+  };
+
+  const closeLogoutModal = () => {
+    setIsModalShow(false);
+  };
+
+  const handleLogout = () => {
+    try {
+      localStorage.clear();
+      setIsModalShow(false);
+      navigate("/");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || "Logout Failed";
+        toast.error(message);
+      }
+    }
   };
 
   return (
@@ -32,7 +52,7 @@ const Header: React.FC = () => {
               <FiUser size={20} />
             </button>
             <button
-              onClick={logout}
+              onClick={openLogoutModal}
               className="p-2 text-gray-500 hover:text-indigo-600 rounded-full hover:bg-gray-100/80 transition-all duration-200"
             >
               <FiLogOut size={20} />
@@ -60,6 +80,16 @@ const Header: React.FC = () => {
           </div>
         </div>
       </div>
+      <LogoutConfirmation
+        isOpen={isModalShow}
+        title="Log Out"
+        content="Are you sure you want to log out?"
+        message="  You'll need to sign in again to access your account."
+        firstBtnText="Cancel"
+        secondBtnText="Yes, Log out"
+        onConfirm={handleLogout}
+        onClose={closeLogoutModal}
+      />
     </header>
   );
 };
