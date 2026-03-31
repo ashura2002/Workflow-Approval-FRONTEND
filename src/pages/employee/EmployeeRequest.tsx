@@ -35,7 +35,6 @@ export const EmployeeRequest: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsloading(true);
-    console.log("Form Data:", formData);
     try {
       const res = await axiosInstance.post("/requests", formData);
       console.log(res);
