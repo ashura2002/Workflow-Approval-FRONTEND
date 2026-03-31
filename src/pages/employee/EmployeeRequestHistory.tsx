@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { RequestData } from "../../types/RequestData.types";
 import { requestDataShape } from "../../utils/mockdata";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { axiosInstance } from "../../utils/axiosInstance";
+import toast from "react-hot-toast";
 
 export const EmployeeRequestHistory: React.FC = () => {
   const [requests, setRequests] = useState<RequestData[]>(requestDataShape);
@@ -17,6 +20,21 @@ export const EmployeeRequestHistory: React.FC = () => {
       setRequests([]);
     }
   };
+
+  useEffect(() => {
+    const getAllMyRequest = async () => {
+      try {
+        const res = await axiosInstance.get("/requests/my-records");
+        console.log(res);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          const errorMessage = error?.response?.data.message;
+          toast.error(errorMessage);
+        }
+      }
+    };
+    getAllMyRequest();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
