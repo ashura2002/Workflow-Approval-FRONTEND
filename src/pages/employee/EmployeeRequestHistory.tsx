@@ -12,8 +12,8 @@ export const EmployeeRequestHistory: React.FC = () => {
   const handleDelete = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const deleteRequest = requests.find((req) => req.id === id);
-      await axiosInstance.delete(`/requests/${deleteRequest?.id}`);
+      await axiosInstance.delete(`/requests/${id}`);
+      setRequests((prev) => prev.filter((req) => req.id !== id));
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         let message = error?.response?.data;
@@ -22,9 +22,16 @@ export const EmployeeRequestHistory: React.FC = () => {
     }
   };
 
-  const handleDeleteAll = () => {
-    if (window.confirm("Are you sure you want to delete all requests?")) {
+  const handleDeleteAll = async () => {
+    try {
+      const res = await axiosInstance.delete("/requests/delete-all");
+      toast.success(res.data.message);
       setRequests([]);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        let message = error?.response?.data?.message;
+        toast.error(message);
+      }
     }
   };
 
@@ -169,7 +176,7 @@ export const EmployeeRequestHistory: React.FC = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-20F0">
                   {requests.map((request) => (
                     <tr
                       key={request.id}
