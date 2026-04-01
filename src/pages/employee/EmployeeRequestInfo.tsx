@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import type { RequestData } from "../../types/RequestData.types";
-import { requestDataShape } from "../../utils/mockdata";
+import { axiosInstance } from "../../utils/axiosInstance";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export const EmployeeRequestInfo: React.FC = () => {
   const { id } = useParams();
@@ -10,15 +12,23 @@ export const EmployeeRequestInfo: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      const foundRequest = requestDataShape.find(
-        (req) => req.id === Number(id),
-      );
-      setRequest(foundRequest || null);
-      setIsLoading(false);
-    }, 300);
-    return () => clearTimeout(timer);
+    const getRequestDetails = async () => {
+      try {
+        const res = await axiosInstance.get(`/requests/${id}`);
+        setRequest(res.data);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          const errorMessage =
+            error?.response?.data?.message || "Request not found";
+          toast.error(errorMessage);
+        }
+        setRequest(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getRequestDetails();
   }, [id]);
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -450,7 +460,7 @@ export const EmployeeRequestInfo: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => navigate("/employee")}
+                onClick={() => navigate("/employee-homepage")}
                 className="flex-1 px-6 py-4 rounded-lg bg-linear-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 border-2 border-blue-600 transition-all duration-200 font-semibold hover:shadow-lg"
               >
                 <span className="flex items-center justify-center gap-2">
