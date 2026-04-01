@@ -36,8 +36,7 @@ export const EmployeeRequest: React.FC = () => {
     e.preventDefault();
     setIsloading(true);
     try {
-      const res = await axiosInstance.post("/requests", formData);
-      console.log(res);
+      await axiosInstance.post("/requests", formData);
       toast.success("Leave request submitted successfully!");
       setFormData({
         startDate: "",
