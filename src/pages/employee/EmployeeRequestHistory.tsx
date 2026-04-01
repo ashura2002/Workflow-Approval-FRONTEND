@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from "react";
 import type { RequestData } from "../../types/RequestData.types";
-import { requestDataShape } from "../../utils/mockdata";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { axiosInstance } from "../../utils/axiosInstance";
 import toast from "react-hot-toast";
 
 export const EmployeeRequestHistory: React.FC = () => {
-  const [requests, setRequests] = useState<RequestData[]>(requestDataShape);
+  const [requests, setRequests] = useState<RequestData[]>([]);
   const navigate = useNavigate();
 
-  const handleDelete = (id: number, e: React.MouseEvent) => {
+  const handleDelete = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setRequests(requests.filter((request) => request.id !== id));
+    try {
+      const deleteRequest = requests.find((req) => req.id === id);
+      await axiosInstance.delete(`/requests/${deleteRequest?.id}`);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        let message = error?.response?.data;
+        toast.error(message);
+      }
+    }
   };
 
   const handleDeleteAll = () => {
@@ -25,7 +32,7 @@ export const EmployeeRequestHistory: React.FC = () => {
     const getAllMyRequest = async () => {
       try {
         const res = await axiosInstance.get("/requests/my-records");
-        console.log(res);
+        setRequests(res.data);
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           const errorMessage = error?.response?.data.message;
@@ -256,7 +263,7 @@ export const EmployeeRequestHistory: React.FC = () => {
               You haven't submitted any leave requests yet.
             </p>
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/employee-homepage")}
               className="px-6 py-3 rounded-lg bg-linear-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg transition-all duration-200 font-semibold hover:from-blue-700 hover:to-indigo-700"
             >
               Back to Dashboard
