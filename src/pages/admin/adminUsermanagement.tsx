@@ -1,51 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { axiosInstance } from "../../utils/axiosInstance";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 interface User {
   id: number;
-  name: string;
+  username: string;
   email: string;
   role: string;
-  status: "active" | "inactive";
+  status?: "active" | "inactive";
+  companyId: number;
 }
 
 export const AdminUsermanagement: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john.doe@company.com",
-      role: "Employee",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane.smith@company.com",
-      role: "Department Head",
-      status: "active",
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      email: "mike.johnson@company.com",
-      role: "Employee",
-      status: "active",
-    },
-    {
-      id: 4,
-      name: "Sarah Williams",
-      email: "sarah.williams@company.com",
-      role: "HR Manager",
-      status: "inactive",
-    },
-    {
-      id: 5,
-      name: "David Brown",
-      email: "david.brown@company.com",
-      role: "Employee",
-      status: "active",
-    },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [role, _] = useState<string | null>(localStorage.getItem("role"));
 
   const handleEdit = (id: number) => {
     alert(`Edit user ${id}`);
@@ -56,7 +25,22 @@ export const AdminUsermanagement: React.FC = () => {
     alert(`User ${id} deleted`);
   };
 
-  const getStatusColor = (status: "active" | "inactive") => {
+  useEffect(() => {
+    const getAllUsersOnCompany = async () => {
+      try {
+        const res = await axiosInstance.get("/users/own-company");
+        setUsers(res.data);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          let message = error?.response?.data?.message;
+          toast.error(message);
+        }
+      }
+    };
+    getAllUsersOnCompany();
+  }, []);
+
+  const getStatusColor = (status: "active" | "inactive" | string) => {
     return status === "active"
       ? "bg-green-100 text-green-800"
       : "bg-gray-100 text-gray-800";
@@ -82,7 +66,9 @@ export const AdminUsermanagement: React.FC = () => {
                 <th className="px-6 py-4 font-medium">Email</th>
                 <th className="px-6 py-4 font-medium">Role</th>
                 <th className="px-6 py-4 font-medium">Status</th>
-                <th className="px-6 py-4 font-medium text-center">Action</th>
+                {role === "Admin" ? (
+                  <th className="px-6 py-4 font-medium text-center">Action</th>
+                ) : null}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -93,7 +79,7 @@ export const AdminUsermanagement: React.FC = () => {
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                      {user.name}
+                      {user.username}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {user.email}
@@ -106,31 +92,32 @@ export const AdminUsermanagement: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 py-1 text-xs rounded-full font-medium ${getStatusColor(
-                          user.status,
+                          user.role,
                         )}`}
                       >
-                        {user.status.charAt(0).toUpperCase() +
-                          user.status.slice(1)}
+                        need to add status on backend
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
-                      <button
-                        onClick={() => handleEdit(user.id)}
-                        className="px-3 py-2 bg-blue-500 hover:bg-blue-600 cursor-pointer
+                    {role === "Admin" ? (
+                      <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
+                        <button
+                          onClick={() => handleEdit(user.id)}
+                          className="px-3 py-2 bg-blue-500 hover:bg-blue-600 cursor-pointer
                          text-white rounded-lg text-sm font-medium transition-colors
                           focus:outline-none focus:ring-2 focus:ring-blue-300"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="px-3 py-2 bg-red-500 hover:bg-red-600 cursor-pointer
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(user.id)}
+                          className="px-3 py-2 bg-red-500 hover:bg-red-600 cursor-pointer
                          text-white rounded-lg text-sm font-medium transition-colors
                           focus:outline-none focus:ring-2 focus:ring-red-300"
-                      >
-                        Delete
-                      </button>
-                    </td>
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    ) : null}
                   </tr>
                 ))
               ) : (

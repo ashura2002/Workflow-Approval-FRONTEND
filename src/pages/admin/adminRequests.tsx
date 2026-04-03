@@ -7,14 +7,32 @@ import toast from "react-hot-toast";
 export const AdminRequests: React.FC = () => {
   const [requests, setRequests] = useState<Request[]>([]);
 
-  const handleApprove = (id: number) => {
-    setRequests(requests.filter((request) => request.id !== id));
-    alert(`Request ${id} approved`);
+  const handleApprove = async (id: number) => {
+    try {
+      const approveRequest = await axiosInstance.patch(
+        `/requests/approved/${id}`,
+      );
+      toast.success(approveRequest.data.message);
+      setRequests((prev) => prev.filter((request) => request.id !== id));
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        let message = error?.response?.data?.message;
+        toast.error(message);
+      }
+    }
   };
 
-  const handleReject = (id: number) => {
-    setRequests(requests.filter((request) => request.id !== id));
-    alert(`Request ${id} rejected`);
+  const handleReject = async (id: number) => {
+    try {
+      const rejectRequest = await axiosInstance.patch(`/requests/reject/${id}`);
+      toast.success(rejectRequest.data.message);
+      setRequests((prev) => prev.filter((request) => request.id !== id));
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        let message = error?.response?.data?.message;
+        toast.error(message);
+      }
+    }
   };
 
   useEffect(() => {
@@ -22,7 +40,6 @@ export const AdminRequests: React.FC = () => {
       try {
         const res = await axiosInstance.get("/requests/pending-requests");
         setRequests(res.data);
-        console.log(res.data);
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           let message = error?.response?.data?.message;

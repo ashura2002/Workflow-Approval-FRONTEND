@@ -1,7 +1,12 @@
-import React from "react";
-import { companyData } from "../../utils/mockdata";
+import React, { useEffect, useState } from "react";
+import { axiosInstance } from "../../utils/axiosInstance";
+import axios from "axios";
+import toast from "react-hot-toast";
+import type { CompanyType } from "../../types/Company.types";
 
 export const AdminCompany: React.FC = () => {
+  const [usersLength, setUsersLength] = useState<number>();
+  const [company, setCompany] = useState<CompanyType>();
   const handleEdit = () => {
     alert("Edit company details");
   };
@@ -11,6 +16,37 @@ export const AdminCompany: React.FC = () => {
       alert("Company deleted");
     }
   };
+
+  useEffect(() => {
+    const usersOnCompany = async () => {
+      try {
+        const res = await axiosInstance.get("/users/own-company");
+        setUsersLength(res.data.length);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          let message = error?.response?.data?.message;
+          toast.error(message);
+        }
+      }
+    };
+    usersOnCompany();
+  }, []);
+
+  useEffect(() => {
+    const getCompany = async () => {
+      try {
+        const res = await axiosInstance.get("/company");
+        setCompany(res.data);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          let message = error?.response?.data?.message;
+          toast.error(message);
+        }
+      }
+    };
+
+    getCompany();
+  }, []);
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -28,7 +64,7 @@ export const AdminCompany: React.FC = () => {
           {/* Company Name */}
           <div className="mb-6">
             <h2 className="text-4xl font-bold text-gray-800">
-              {companyData.CompanyName}
+              {company?.companyName}
             </h2>
           </div>
 
@@ -38,7 +74,7 @@ export const AdminCompany: React.FC = () => {
               Description
             </h3>
             <p className="text-gray-600 leading-relaxed">
-              {companyData.description}
+              {company?.description}
             </p>
           </div>
 
@@ -49,7 +85,7 @@ export const AdminCompany: React.FC = () => {
                 Total Users
               </h3>
               <div className="text-4xl font-bold text-blue-600">
-                {companyData.totalUsers}
+                {usersLength}
               </div>
             </div>
           </div>

@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { RequestData } from "../../types/RequestData.types";
-import { requestDataShape } from "../../utils/mockdata";
+import { axiosInstance } from "../../utils/axiosInstance";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export const AdminArchivesRequest: React.FC = () => {
-  const [archivedRequests] = useState<RequestData[]>(
-    requestDataShape.filter(
-      (req) => req.status === "Approved" || req.status === "Rejected",
-    ),
-  );
+  const [archivedRequests, setArchiveRequests] = useState<RequestData[]>([]);
+
+  useEffect(() => {
+    const getAllPendingReqs = async () => {
+      try {
+        const res = await axiosInstance.get("/requests/archive-requests");
+        setArchiveRequests(res.data);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          let message = error?.response?.data?.message;
+          toast.error(message);
+        }
+      }
+    };
+    getAllPendingReqs();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -223,7 +236,7 @@ export const AdminArchivesRequest: React.FC = () => {
                       </td>
                       <td className="px-4 md:px-6 py-4 text-sm text-gray-700 hidden lg:table-cell">
                         <span className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-semibold">
-                          {request.viewTo}
+                          {request.viewTo ? null : "No Next Approver"}
                         </span>
                       </td>
                       <td className="px-4 md:px-6 py-4 text-sm">
