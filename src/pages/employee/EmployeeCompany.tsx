@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../utils/axiosInstance";
 import axios from "axios";
 import toast from "react-hot-toast";
-
-export type CompanyType = {
-  id: number;
-  companyName: string;
-  description: string;
-};
+import type { CompanyType } from "../../types/Company.types";
 
 export const EmployeeCompany: React.FC = () => {
   const [company, setCompany] = useState<CompanyType>();

@@ -16,6 +16,7 @@ export const LoginPage: React.FC = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [_, setMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,6 +26,7 @@ export const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const res = await axiosInstance.post("/auth/login", {
         username: formData.username,
@@ -54,6 +56,8 @@ export const LoginPage: React.FC = () => {
       } else {
         setMessage("Something unexpected happened");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -178,9 +182,10 @@ export const LoginPage: React.FC = () => {
 
               <button
                 type="submit"
+                disabled={isLoading}
                 className="w-full bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] focus:ring-2 focus:ring-indigo-500/40 focus:outline-none shadow-md"
               >
-                Sign In
+                {isLoading ? "Signing in..." : "Log in"}
               </button>
             </form>
 

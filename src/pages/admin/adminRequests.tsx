@@ -1,19 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Request } from "../../types/Request.types";
-import { RequestMockData } from "../../utils/mockdata";
+import { axiosInstance } from "../../utils/axiosInstance";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export const AdminRequests: React.FC = () => {
-  const [requests, setRequests] = useState<Request[]>(RequestMockData);
+  const [requests, setRequests] = useState<Request[]>([]);
 
-  const handleApprove = (id: number) => {
-    setRequests(requests.filter((request) => request.id !== id));
-    alert(`Request ${id} approved`);
+  const handleApprove = async (id: number) => {
+    try {
+      const approveRequest = await axiosInstance.patch(
+        `/requests/approved/${id}`,
+      );
+      toast.success(approveRequest.data.message);
+      setRequests((prev) => prev.filter((request) => request.id !== id));
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        let message = error?.response?.data?.message;
+        toast.error(message);
+      }
+    }
   };
 
-  const handleReject = (id: number) => {
-    setRequests(requests.filter((request) => request.id !== id));
-    alert(`Request ${id} rejected`);
+  const handleReject = async (id: number) => {
+    try {
+      const rejectRequest = await axiosInstance.patch(`/requests/reject/${id}`);
+      toast.success(rejectRequest.data.message);
+      setRequests((prev) => prev.filter((request) => request.id !== id));
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        let message = error?.response?.data?.message;
+        toast.error(message);
+      }
+    }
   };
+
+  useEffect(() => {
+    const getAllPendingRequests = async () => {
+      try {
+        const res = await axiosInstance.get("/requests/pending-requests");
+        setRequests(res.data);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          let message = error?.response?.data?.message;
+          toast.error(message);
+        }
+      }
+    };
+    getAllPendingRequests();
+  }, []);
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -35,6 +70,7 @@ export const AdminRequests: React.FC = () => {
                 <th className="px-6 py-4 font-medium">Start Date</th>
                 <th className="px-6 py-4 font-medium">End Date</th>
                 <th className="px-6 py-4 font-medium">Leave Type</th>
+                <th className="px-6 py-4 font-medium">Reason</th>
                 <th className="px-6 py-4 font-medium text-center">Action</th>
               </tr>
             </thead>
@@ -58,6 +94,9 @@ export const AdminRequests: React.FC = () => {
                       <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 font-medium">
                         {request.leaveType}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {request.reason}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
                       <button
