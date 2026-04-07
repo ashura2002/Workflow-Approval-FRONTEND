@@ -345,7 +345,7 @@ export const EmployeeRequestInfo: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ReadOnlyField
                   label="View To"
-                  value={request.viewTo}
+                  value={request.viewTo === null ? "Completed" : request.viewTo}
                   icon={
                     <svg
                       className="w-4 h-4"

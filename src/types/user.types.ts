@@ -6,4 +6,5 @@ export type UserInterface = {
   role: Role;
   companyId: string;
   username: string;
+  isActive?: Boolean;
 };
