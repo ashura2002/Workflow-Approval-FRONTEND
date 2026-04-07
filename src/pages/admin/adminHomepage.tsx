@@ -51,12 +51,6 @@ export const AdminHomepage: React.FC = () => {
         />
 
         <Cards
-          cardTitle="Todays Requests"
-          data={usersLength ? usersLength : 0}
-          message="Today's Requests"
-        />
-
-        <Cards
           cardTitle="Active Users"
           data={activeUsers ? activeUsers : 0}
           message="Currently on this company"

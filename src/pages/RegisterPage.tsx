@@ -1,4 +1,6 @@
+import axios from "axios";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import {
   FiEye,
   FiEyeOff,
@@ -9,18 +11,17 @@ import {
   FiFileText,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { axiosInstance } from "../utils/axiosInstance";
 
 export const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
-    confirmPassword: "",
     company: "",
     description: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
@@ -36,24 +37,27 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setPasswordError("Passwords do not match");
-      return;
+    try {
+      const res = await axiosInstance.post("/auth/register-admin", formData);
+      toast.success(res.data.message);
+      console.log(res);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error?.response?.data?.message || "Register failed try again!",
+        );
+      }
     }
-
-    // Check terms acceptance
-    if (!acceptTerms) {
-      alert("Please accept the terms and conditions");
-      return;
-    }
-
-    // Handle registration logic here (omit confirmPassword)
-    const { confirmPassword, ...registrationData } = formData;
-    console.log("Registration attempt with:", registrationData);
+    setFormData({
+      username: "",
+      email: "",
+      password: "",
+      company: "",
+      description: "",
+    });
   };
 
   return (
@@ -205,45 +209,6 @@ export const RegisterPage: React.FC = () => {
                     )}
                   </button>
                 </div>
-              </div>
-
-              {/* Confirm Password */}
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiLock className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all duration-200"
-                    placeholder="••••••••"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-600 focus:outline-none transition-colors"
-                  >
-                    {showConfirmPassword ? (
-                      <FiEyeOff size={20} />
-                    ) : (
-                      <FiEye size={20} />
-                    )}
-                  </button>
-                </div>
-                {passwordError && (
-                  <p className="text-sm text-red-600 mt-1">{passwordError}</p>
-                )}
               </div>
 
               {/* Company */}
