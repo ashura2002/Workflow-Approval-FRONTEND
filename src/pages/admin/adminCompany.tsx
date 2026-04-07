@@ -7,9 +7,68 @@ import type { CompanyType } from "../../types/Company.types";
 export const AdminCompany: React.FC = () => {
   const [usersLength, setUsersLength] = useState<number>();
   const [role, _] = useState<string | null>(localStorage.getItem("role"));
+  const [companyId, __] = useState<string | null>(
+    localStorage.getItem("companyId"),
+  );
   const [company, setCompany] = useState<CompanyType>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    companyName: "",
+    description: "",
+    tagline: "",
+  });
+
   const handleEdit = () => {
-    alert("Edit company details");
+    if (company) {
+      setFormData({
+        companyName: company.companyName || "",
+        description: company.description || "",
+        tagline: company.tagline || "",
+      });
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFormData({
+      companyName: "",
+      description: "",
+      tagline: "",
+    });
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await axiosInstance.patch(`/company/${companyId}`, formData);
+      setCompany((prev) =>
+        prev
+          ? {
+              ...prev,
+              companyName: formData.companyName,
+              description: formData.description,
+              tagline: formData.tagline,
+            }
+          : prev,
+      );
+      toast.success("Company updated successfully");
+      handleCloseModal();
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data?.message);
+      }
+    }
   };
 
   const handleDelete = () => {
@@ -119,6 +178,86 @@ export const AdminCompany: React.FC = () => {
           ) : null}
         </div>
       </div>
+
+      {/* Edit Company Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg max-w-md w-full mx-4">
+            {/* Modal Header */}
+            <div className="border-b border-gray-200 px-6 py-4">
+              <h2 className="text-xl font-bold text-gray-800">Edit Company</h2>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {/* Company Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Company Name
+                </label>
+                <input
+                  type="text"
+                  name="companyName"
+                  value={formData.companyName}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter company name"
+                  required
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  placeholder="Enter company description"
+                  required
+                />
+              </div>
+
+              {/* Tagline */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tagline
+                </label>
+                <input
+                  type="text"
+                  name="tagline"
+                  value={formData.tagline}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter company tagline"
+                  required
+                />
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex gap-3 pt-4 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
