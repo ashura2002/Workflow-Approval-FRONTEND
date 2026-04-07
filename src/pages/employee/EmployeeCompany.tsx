@@ -39,10 +39,7 @@ export const EmployeeCompany: React.FC = () => {
           </span>
         </h1>
         {/* Tagline */}
-        <p className="text-sm italic text-gray-400 mb-12">
-          TO DO FOR BACKEND COMPANY NEED TO ADD TAGLINE TO DISPLAY TEXT ON THIS
-          PART
-        </p>
+        <p className="text-sm italic text-gray-400 mb-12">{company?.tagline}</p>
 
         {/* Short divider */}
         <div className="w-12 h-px bg-indigo-100 mb-12" />
