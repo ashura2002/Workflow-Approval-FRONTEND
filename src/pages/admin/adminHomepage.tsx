@@ -1,9 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Cards } from "../../components/Cards";
-import { hompageCardData, recentActivity } from "../../utils/mockdata";
+import { recentActivity } from "../../utils/mockdata";
+import { axiosInstance } from "../../utils/axiosInstance";
+import axios from "axios";
+import toast from "react-hot-toast";
+import type { UserInterface } from "../../types/user.types";
 
 export const AdminHomepage: React.FC = () => {
   const [name, _] = useState<string | null>(localStorage.getItem("username"));
+  const [usersLength, setUsersLength] = useState<number>();
+  const [activeUsers, setActiveUsers] = useState<number>();
+
+  useEffect(() => {
+    const usersOnCompany = async () => {
+      try {
+        const res = await axiosInstance.get("/users/own-company");
+        const activeUsersLength = res.data;
+        const activeUserList = activeUsersLength.filter(
+          (user: UserInterface) => user.isActive,
+        );
+        setActiveUsers(activeUserList.length);
+        setUsersLength(res.data.length);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          let message = error?.response?.data?.message;
+          toast.error(message);
+        }
+      }
+    };
+    usersOnCompany();
+  }, []);
+
   return (
     <div className="p-6 max-w-7xl mx-auto font-sans">
       {/* Header */}
@@ -17,14 +44,23 @@ export const AdminHomepage: React.FC = () => {
 
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {hompageCardData.map((card, index) => (
-          <Cards
-            key={index}
-            cardTitle={card.cardTitle}
-            data={card.data}
-            message={card.message}
-          />
-        ))}
+        <Cards
+          cardTitle="Users"
+          data={usersLength ? usersLength : 0}
+          message="Currently on this Company"
+        />
+
+        <Cards
+          cardTitle="Todays Requests"
+          data={usersLength ? usersLength : 0}
+          message="Today's Requests"
+        />
+
+        <Cards
+          cardTitle="Active Users"
+          data={activeUsers ? activeUsers : 0}
+          message="Currently on this company"
+        />
       </div>
 
       {/* Analytics Section */}
