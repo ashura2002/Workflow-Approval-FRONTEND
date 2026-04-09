@@ -39,7 +39,6 @@ export const AdminRequests: React.FC = () => {
     const getAllPendingRequests = async () => {
       try {
         const res = await axiosInstance.get("/requests/pending-requests");
-        console.log("Pending Request", res.data);
         setRequests(res.data);
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {

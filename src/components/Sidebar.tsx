@@ -24,7 +24,16 @@ const Sidebar = () => {
 
       {/* Navigation Links */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {(role === "Employee" ? employeeLinks : adminNavLinks).map((item) => (
+        {(role === "Employee"
+          ? employeeLinks
+          : adminNavLinks.filter(
+              (item) =>
+                !(
+                  item.linkName === "Archives" &&
+                  (role === "HR" || role === "DepartmentHead")
+                ),
+            )
+        ).map((item) => (
           <NavLink key={item.linkName} to={item.path}>
             {({ isActive }) => (
               <div

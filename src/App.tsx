@@ -146,4 +146,6 @@ const App: React.FC = () => {
 
 export default App;
 
-// TODO EMPLOYEECOMPANY FILE
+// TO DO
+// need to hide archive link to hr and departmentHead
+// logout endpoints

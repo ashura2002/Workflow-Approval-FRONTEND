@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { FiUser, FiLogOut } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { LogoutConfirmation } from "./LogoutConfirmation";
+import { axiosInstance } from "../utils/axiosInstance";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -17,8 +18,10 @@ const Header: React.FC = () => {
     setIsModalShow(false);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     try {
+      const res = await axiosInstance.post("/auth/logout");
+      toast.success(res.data.message);
       localStorage.clear();
       setIsModalShow(false);
       navigate("/");
