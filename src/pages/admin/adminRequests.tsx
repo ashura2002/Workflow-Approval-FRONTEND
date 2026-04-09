@@ -39,6 +39,7 @@ export const AdminRequests: React.FC = () => {
     const getAllPendingRequests = async () => {
       try {
         const res = await axiosInstance.get("/requests/pending-requests");
+        console.log("Pending Request", res.data);
         setRequests(res.data);
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
@@ -66,7 +67,8 @@ export const AdminRequests: React.FC = () => {
           <table className="w-full text-sm text-left text-gray-600">
             <thead className="bg-gray-50 text-gray-700 text-xs uppercase tracking-wider">
               <tr>
-                <th className="px-6 py-4 font-medium">Name</th>
+                <th className="px-6 py-4 font-medium">Username</th>
+                <th className="px-6 py-4 font-medium">Email</th>
                 <th className="px-6 py-4 font-medium">Start Date</th>
                 <th className="px-6 py-4 font-medium">End Date</th>
                 <th className="px-6 py-4 font-medium">Leave Type</th>
@@ -82,13 +84,24 @@ export const AdminRequests: React.FC = () => {
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                      {request.name}
+                      {request.user.username}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                      {request.user.email}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {request.startDate}
+                      {new Date(request.startDate).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {request.endDate}
+                      {new Date(request.endDate).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 font-medium">
@@ -121,7 +134,7 @@ export const AdminRequests: React.FC = () => {
               ) : (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={7}
                     className="px-6 py-12 text-center text-gray-500"
                   >
                     <p className="text-lg font-medium">No pending requests</p>
