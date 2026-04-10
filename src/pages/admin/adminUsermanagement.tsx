@@ -3,10 +3,14 @@ import { axiosInstance } from "../../utils/axiosInstance";
 import axios from "axios";
 import toast from "react-hot-toast";
 import type { UserInterface } from "../../types/user.types";
+import { Button } from "../../components/Button";
+import { AddUser } from "../../components/AddUser";
+import { CirclePlusIcon } from "lucide-react";
 
 export const AdminUsermanagement: React.FC = () => {
   const [users, setUsers] = useState<UserInterface[]>([]);
   const [role, _] = useState<string | null>(localStorage.getItem("role"));
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleEdit = (id: number) => {
     alert(`Edit user ${id}`);
@@ -39,11 +43,20 @@ export const AdminUsermanagement: React.FC = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">User Management</h1>
-        <p className="text-gray-500 mt-1">
-          Manage employee accounts and permissions
-        </p>
+      <div className="mb-8 flex justify-between px-3">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">User Management</h1>
+          <p className="text-gray-500 mt-1">
+            Manage employee accounts and permissions
+          </p>
+        </div>
+        {role === "Admin" ? (
+          <Button 
+            text="Add User" 
+            icons={<CirclePlusIcon />}
+            onClick={() => setIsModalOpen(true)}
+          />
+        ) : null}
       </div>
 
       {/* Table container with card-like styling */}
@@ -135,6 +148,9 @@ export const AdminUsermanagement: React.FC = () => {
           {users.filter((u) => u.isActive).length} active)
         </div>
       )}
+
+      {/* Add User Modal */}
+      <AddUser isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

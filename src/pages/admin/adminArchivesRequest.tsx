@@ -236,7 +236,7 @@ export const AdminArchivesRequest: React.FC = () => {
                       </td>
                       <td className="px-4 md:px-6 py-4 text-sm text-gray-700 hidden lg:table-cell">
                         <span className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-semibold">
-                          {request.viewTo ? null : "No Next Approver"}
+                          {request.viewTo ? null : "Completed"}
                         </span>
                       </td>
                       <td className="px-4 md:px-6 py-4 text-sm">
