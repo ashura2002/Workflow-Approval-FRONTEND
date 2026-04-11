@@ -1,49 +1,94 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   X,
   User,
   Mail,
-  Briefcase,
   Key,
   Check,
   Eye,
   EyeOff,
+  UserPlus,
+  Info,
+  ChevronDown,
 } from "lucide-react";
+import { axiosInstance } from "../utils/axiosInstance";
+import toast from "react-hot-toast";
 
 interface AddUserProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+type Role = "Employee" | "DepartmentHead" | "HR";
+
+const ROLE_LABELS: Record<Role, string> = {
+  Employee: "Employee",
+  DepartmentHead: "Department Head",
+  HR: "HR",
+};
+
+const ROLE_ENDPOINTS: Record<Role, string> = {
+  Employee: "/auth/register-employee",
+  DepartmentHead: "/auth/register-departmentHead",
+  HR: "/auth/register-hr",
+};
+
+interface RegisterUserDTO {
+  username: string;
+  email: string;
+  password: string;
+}
+
 export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterUserDTO>({
     username: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    role: "Employee",
   });
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState<Role>("Employee");
 
   const [errors, setErrors] = useState<{
     username?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
-    role?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) onClose();
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      const firstInput =
+        modalRef.current.querySelector<HTMLElement>("input, select");
+      firstInput?.focus();
+    }
+  }, [isOpen]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    if (name === "confirmPassword") {
+      setConfirmPassword(value);
+      if (errors.confirmPassword)
+        setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      if (errors[name as keyof typeof errors])
+        setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
     if (submitSuccess) setSubmitSuccess(false);
     if (submitError) setSubmitError("");
@@ -51,35 +96,23 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
-    const { username, email, password, confirmPassword, role } = formData;
+    const { username, email, password } = formData;
 
-    if (!username.trim()) {
-      newErrors.username = "Username is required";
-    } else if (username.length < 3) {
-      newErrors.username = "Username must be at least 3 characters";
-    }
+    if (!username.trim()) newErrors.username = "Required";
+    else if (username.length < 3) newErrors.username = "Min 3 characters";
+    else if (username.length > 20) newErrors.username = "Max 20 characters";
 
-    if (!email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
+    if (!email.trim()) newErrors.email = "Required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      newErrors.email = "Invalid email";
 
-    if (!password) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
+    if (!password) newErrors.password = "Required";
+    else if (password.length < 6) newErrors.password = "Min 6 characters";
+    else if (password.length > 50) newErrors.password = "Max 50 characters";
 
-    if (!confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    if (!role) {
-      newErrors.role = "Please select a role";
-    }
+    if (!confirmPassword) newErrors.confirmPassword = "Required";
+    else if (password !== confirmPassword)
+      newErrors.confirmPassword = "Passwords don't match";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -93,28 +126,38 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
     setSubmitError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const userData = {
+      const endpoint = ROLE_ENDPOINTS[selectedRole];
+      const payload: RegisterUserDTO = {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        role: formData.role,
       };
-      console.log("User registered:", userData);
-      setSubmitSuccess(true);
-      setFormData({
-        username: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        role: "Employee",
+
+      const response = await axiosInstance.post(endpoint, formData);
+      toast.success(response.data.message);
+      
+      console.log({
+        PANGDEBUG: "",
+        ENDPOINTS: endpoint,
+        PAYLOAD: payload,
+        RESPONSE: response,
       });
+
+      setSubmitSuccess(true);
+      setFormData({ username: "", email: "", password: "" });
+      setConfirmPassword("");
+      setSelectedRole("Employee");
+
       setTimeout(() => {
         onClose();
         setSubmitSuccess(false);
       }, 1500);
     } catch (err) {
-      setSubmitError("Registration failed. Please try again.");
+      setSubmitError(
+        err instanceof Error
+          ? err.message
+          : "Registration failed. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -122,270 +165,311 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  const fieldClass = (name: string) =>
+    [
+      "flex items-center gap-2 h-9 px-3 rounded-lg border transition-all duration-150 bg-white",
+      errors[name as keyof typeof errors]
+        ? "border-red-300 ring-2 ring-red-100"
+        : focusedField === name
+          ? "border-zinc-400 ring-2 ring-zinc-100"
+          : "border-zinc-200 hover:border-zinc-300",
+    ].join(" ");
+
+  const iconClass = (name: string) =>
+    errors[name as keyof typeof errors]
+      ? "text-red-400"
+      : focusedField === name
+        ? "text-zinc-600"
+        : "text-zinc-400";
+
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
         onClick={onClose}
+        aria-hidden="true"
       />
 
-      {/* Modal container */}
+      {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div
-          className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl"
+          ref={modalRef}
+          className="relative w-full max-w-110  bg-white rounded-2xl border border-zinc-200 shadow-xl"
           onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
         >
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-200"
-            aria-label="Close modal"
-          >
-            <X size={20} />
-          </button>
-
-          {/* Header with linera accent */}
-          <div className="relative overflow-hidden rounded-t-2xl">
-            <div className="absolute top-0 left-0 w-full h-1 bg-linera-to-r from-blue-500 to-indigo-600" />
-            <div className="px-6 pt-6 pb-2 text-center">
-              <h2 className="text-2xl font-bold bg-linera-to-r from-gray-800 to-gray-700 bg-clip-text text-transparent">
-                Create new account
+          {/* Header */}
+          <div className="flex items-start gap-3 px-5 pt-5 pb-4">
+            <div className="w-9 h-9 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center shrink-0">
+              <UserPlus size={16} className="text-zinc-500" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2
+                id="modal-title"
+                className="text-[15px] font-semibold text-zinc-900 leading-snug"
+              >
+                Add team member
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Fill in the details to add a team member
+              <p className="text-[13px] text-zinc-500 mt-0.5">
+                Create a new account for your workspace
               </p>
             </div>
+            <button
+              onClick={onClose}
+              className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-300"
+              aria-label="Close"
+            >
+              <X size={14} />
+            </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 pt-2 space-y-5">
-            {/* Username field */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                Username
-              </label>
-              <div
-                className={`flex items-center bg-gray-50 border rounded-xl transition-all duration-200 focus-within:ring-2 ${
-                  errors.username
-                    ? "border-red-300 focus-within:ring-red-100"
-                    : "border-gray-200 focus-within:border-blue-400 focus-within:ring-blue-100"
-                }`}
-              >
-                <User size={18} className="ml-3 text-gray-400" />
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  placeholder="johndoe"
-                  className="w-full py-2.5 px-3 bg-transparent text-gray-800 text-sm outline-none"
-                />
-              </div>
-              {errors.username && (
-                <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                  <span className="inline-block w-1 h-1 bg-red-500 rounded-full" />
-                  {errors.username}
-                </p>
-              )}
-            </div>
+          <div className="h-px bg-zinc-100 mx-5" />
 
-            {/* Email field */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                Email address
-              </label>
-              <div
-                className={`flex items-center bg-gray-50 border rounded-xl transition-all duration-200 focus-within:ring-2 ${
-                  errors.email
-                    ? "border-red-300 focus-within:ring-red-100"
-                    : "border-gray-200 focus-within:border-blue-400 focus-within:ring-blue-100"
-                }`}
-              >
-                <Mail size={18} className="ml-3 text-gray-400" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="hello@example.com"
-                  className="w-full py-2.5 px-3 bg-transparent text-gray-800 text-sm outline-none"
-                />
-              </div>
-              {errors.email && (
-                <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                  <span className="inline-block w-1 h-1 bg-red-500 rounded-full" />
-                  {errors.email}
-                </p>
-              )}
-            </div>
-
-            {/* Role dropdown */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="px-5 pt-4 pb-4 space-y-3">
+            {/* Role selector — controls endpoint only, not included in DTO */}
+            <div className="space-y-1.5">
+              <label className="block text-[12px] font-medium text-zinc-600">
                 Role
               </label>
               <div
-                className={`flex items-center bg-gray-50 border rounded-xl transition-all duration-200 focus-within:ring-2 ${
-                  errors.role
-                    ? "border-red-300 focus-within:ring-red-100"
-                    : "border-gray-200 focus-within:border-blue-400 focus-within:ring-blue-100"
-                }`}
+                className={[
+                  "flex items-center gap-2 h-9 px-3 rounded-lg border transition-all duration-150 bg-white",
+                  focusedField === "role"
+                    ? "border-zinc-400 ring-2 ring-zinc-100"
+                    : "border-zinc-200 hover:border-zinc-300",
+                ].join(" ")}
               >
-                <Briefcase size={18} className="ml-3 text-gray-400" />
+                <ChevronDown size={14} className="text-zinc-400 shrink-0" />
                 <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="w-full py-2.5 px-3 bg-transparent text-gray-800 text-sm outline-none appearance-none"
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239CA3AF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")`,
-                    backgroundPosition: "right 0.75rem center",
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "1.25rem",
-                  }}
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value as Role)}
+                  onFocus={() => setFocusedField("role")}
+                  onBlur={() => setFocusedField(null)}
+                  className="w-full text-[13px] text-zinc-800 bg-transparent outline-none appearance-none cursor-pointer"
                 >
-                  <option value="HR">HR</option>
-                  <option value="DepartmentHead">Department Head</option>
-                  <option value="Employee">Employee</option>
+                  {(Object.keys(ROLE_LABELS) as Role[]).map((role) => (
+                    <option key={role} value={role}>
+                      {ROLE_LABELS[role]}
+                    </option>
+                  ))}
                 </select>
               </div>
-              {errors.role && (
-                <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                  <span className="inline-block w-1 h-1 bg-red-500 rounded-full" />
-                  {errors.role}
-                </p>
-              )}
+              <p className="text-[11px] text-zinc-400">
+                Selects the registration endpoint — not sent in the request
+                body.
+              </p>
             </div>
 
-            {/* Password field with toggle */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                Password
-              </label>
-              <div
-                className={`flex items-center bg-gray-50 border rounded-xl transition-all duration-200 focus-within:ring-2 ${
-                  errors.password
-                    ? "border-red-300 focus-within:ring-red-100"
-                    : "border-gray-200 focus-within:border-blue-400 focus-within:ring-blue-100"
-                }`}
-              >
-                <Key size={18} className="ml-3 text-gray-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full py-2.5 px-3 bg-transparent text-gray-800 text-sm outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="pr-3 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                  <span className="inline-block w-1 h-1 bg-red-500 rounded-full" />
-                  {errors.password}
-                </p>
-              )}
-            </div>
+            <div className="h-px bg-zinc-100" />
 
-            {/* Confirm password field */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                Confirm password
-              </label>
-              <div
-                className={`flex items-center bg-gray-50 border rounded-xl transition-all duration-200 focus-within:ring-2 ${
-                  errors.confirmPassword
-                    ? "border-red-300 focus-within:ring-red-100"
-                    : "border-gray-200 focus-within:border-blue-400 focus-within:ring-blue-100"
-                }`}
-              >
-                <Check size={18} className="ml-3 text-gray-400" />
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full py-2.5 px-3 bg-transparent text-gray-800 text-sm outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="pr-3 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                  <span className="inline-block w-1 h-1 bg-red-500 rounded-full" />
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
-
-            {/* Submit button with loading state */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-3 mt-2 bg-linera-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transform active:scale-[0.98]"
-            >
-              {isSubmitting ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Creating account...</span>
+            {/* Row: Username + Email */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="block text-[12px] font-medium text-zinc-600">
+                  Username
+                </label>
+                <div className={fieldClass("username")}>
+                  <User
+                    size={14}
+                    className={`shrink-0 ${iconClass("username")}`}
+                  />
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    onFocus={() => setFocusedField("username")}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="johndoe"
+                    className="w-full text-[13px] text-zinc-800 placeholder-zinc-300 bg-transparent outline-none"
+                    aria-invalid={!!errors.username}
+                  />
                 </div>
-              ) : (
-                "Register"
-              )}
-            </button>
+                {errors.username && (
+                  <p className="text-[11px] text-red-500">{errors.username}</p>
+                )}
+              </div>
 
-            {/* Success / error messages */}
+              <div className="space-y-1.5">
+                <label className="block text-[12px] font-medium text-zinc-600">
+                  Email address
+                </label>
+                <div className={fieldClass("email")}>
+                  <Mail
+                    size={14}
+                    className={`shrink-0 ${iconClass("email")}`}
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    onFocus={() => setFocusedField("email")}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="hello@example.com"
+                    className="w-full text-[13px] text-zinc-800 placeholder-zinc-300 bg-transparent outline-none"
+                    aria-invalid={!!errors.email}
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-[11px] text-red-500">{errors.email}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Row: Password + Confirm */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="block text-[12px] font-medium text-zinc-600">
+                  Password
+                </label>
+                <div className={fieldClass("password")}>
+                  <Key
+                    size={14}
+                    className={`shrink-0 ${iconClass("password")}`}
+                  />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    onFocus={() => setFocusedField("password")}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="••••••"
+                    className="w-full text-[13px] text-zinc-800 placeholder-zinc-300 bg-transparent outline-none"
+                    aria-invalid={!!errors.password}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="shrink-0 text-zinc-400 hover:text-zinc-600 transition-colors focus:outline-none"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-[11px] text-red-500">{errors.password}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[12px] font-medium text-zinc-600">
+                  Confirm password
+                </label>
+                <div className={fieldClass("confirmPassword")}>
+                  <Check
+                    size={14}
+                    className={`shrink-0 ${iconClass("confirmPassword")}`}
+                  />
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={confirmPassword}
+                    onChange={handleChange}
+                    onFocus={() => setFocusedField("confirmPassword")}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="••••••"
+                    className="w-full text-[13px] text-zinc-800 placeholder-zinc-300 bg-transparent outline-none"
+                    aria-invalid={!!errors.confirmPassword}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="shrink-0 text-zinc-400 hover:text-zinc-600 transition-colors focus:outline-none"
+                    aria-label={
+                      showConfirmPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff size={13} />
+                    ) : (
+                      <Eye size={13} />
+                    )}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-[11px] text-red-500">
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Hint */}
+            <div className="flex items-start gap-2 px-3 py-2.5 bg-zinc-50 rounded-lg border border-zinc-100">
+              <Info size={13} className="text-zinc-400 mt-0.5 shrink-0" />
+              <p className="text-[12px] text-zinc-500 leading-relaxed">
+                Password must be 6–50 characters. The new user will receive an
+                invite email upon registration.
+              </p>
+            </div>
+
+            {/* Feedback */}
             {submitSuccess && (
-              <div className="mt-4 p-3 bg-emerald-50 text-emerald-700 rounded-xl text-center text-sm font-medium border border-emerald-200">
-                <span className="inline-flex items-center gap-2">
-                  <Check size={16} />
-                  Account created successfully! Redirecting...
-                </span>
+              <div className="flex items-center gap-2 px-3 py-2.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <Check size={13} className="text-emerald-600 shrink-0" />
+                <p className="text-[12px] text-emerald-700 font-medium">
+                  Account created successfully!
+                </p>
               </div>
             )}
             {submitError && (
-              <div className="mt-4 p-3 bg-red-50 text-red-600 rounded-xl text-center text-sm font-medium border border-red-200">
-                {submitError}
+              <div className="px-3 py-2.5 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-[12px] text-red-600">{submitError}</p>
               </div>
             )}
           </form>
 
-          {/* Footer with terms */}
-          <div className="px-6 pb-6 pt-2 text-center">
-            <p className="text-xs text-gray-400">
-              By registering, you agree to our{" "}
+          <div className="h-px bg-zinc-100 mx-5" />
+
+          {/* Footer */}
+          <div className="flex items-center justify-between px-5 py-3.5">
+            <p className="text-[11px] text-zinc-400">
               <button
                 type="button"
-                className="text-blue-500 hover:underline focus:outline-none"
+                className="hover:text-zinc-600 hover:underline focus:outline-none transition-colors"
               >
-                Terms of Service
+                Terms
               </button>{" "}
-              and{" "}
+              ·{" "}
               <button
                 type="button"
-                className="text-blue-500 hover:underline focus:outline-none"
+                className="hover:text-zinc-600 hover:underline focus:outline-none transition-colors"
               >
-                Privacy Policy
+                Privacy
               </button>
-              .
             </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="h-8 px-3.5 text-[13px] text-zinc-600 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-200"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="h-8 px-4 text-[13px] font-medium text-white bg-zinc-900 rounded-lg hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-1"
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Creating…
+                  </span>
+                ) : (
+                  "Register"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
