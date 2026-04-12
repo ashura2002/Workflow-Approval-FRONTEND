@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "./components/Header";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
@@ -15,131 +15,145 @@ import { EmployeeRequestInfo } from "./pages/employee/EmployeeRequestInfo";
 import { AdminArchivesRequest } from "./pages/admin/adminArchivesRequest";
 import { EmployeeCompany } from "./pages/employee/EmployeeCompany";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import {
+  userContext,
+  type User,
+  type UserContextType,
+} from "../src/context/UserContext";
 
 const App: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([]);
   const location = useLocation();
+
+  const contextValue: UserContextType = {
+    users,
+    setUsers,
+  };
+
   const isHomePage =
     location.pathname === "/" || location.pathname === "/register";
 
   return (
     <div>
-      {!isHomePage && (
-        <header>
-          <Header />
-        </header>
-      )}
-
-      <div className="flex h-screen">
+      <userContext.Provider value={contextValue}>
         {!isHomePage && (
-          <aside className="w-64">
-            <Sidebar />
-          </aside>
+          <header>
+            <Header />
+          </header>
         )}
 
-        <main className="overflow-y-auto w-full p-3">
-          <div>
-            <Routes>
-              {/* PUBLIC ROUTES */}
-              <Route path="/" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
+        <div className="flex h-screen">
+          {!isHomePage && (
+            <aside className="w-64">
+              <Sidebar />
+            </aside>
+          )}
 
-              {/* ADMIN */}
-              <Route
-                path="/admin-homepage"
-                element={
-                  <ProtectedRoute
-                    roles={["Admin", "HR", "DepartmentHead"]}
-                    element={<AdminHomepage />}
-                  />
-                }
-              />
-              <Route
-                path="/admin-requests"
-                element={
-                  <ProtectedRoute
-                    roles={["Admin", "HR", "DepartmentHead"]}
-                    element={<AdminRequests />}
-                  />
-                }
-              />
-              <Route
-                path="/admin-company"
-                element={
-                  <ProtectedRoute
-                    roles={["Admin", "HR", "DepartmentHead"]}
-                    element={<AdminCompany />}
-                  />
-                }
-              />
-              <Route
-                path="/admin-user-management"
-                element={
-                  <ProtectedRoute
-                    roles={["Admin", "HR", "DepartmentHead"]}
-                    element={<AdminUsermanagement />}
-                  />
-                }
-              />
-              <Route
-                path="/admin-archives-requests"
-                element={
-                  <ProtectedRoute
-                    roles={["Admin", "HR", "DepartmentHead"]}
-                    element={<AdminArchivesRequest />}
-                  />
-                }
-              />
+          <main className="overflow-y-auto w-full p-3">
+            <div>
+              <Routes>
+                {/* PUBLIC ROUTES */}
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
-              {/* EMPLOYEE */}
-              <Route
-                path="/employee-homepage"
-                element={
-                  <ProtectedRoute
-                    roles="Employee"
-                    element={<EmployeeHomepage />}
-                  />
-                }
-              />
-              <Route
-                path="/employee-requests"
-                element={
-                  <ProtectedRoute
-                    roles="Employee"
-                    element={<EmployeeRequest />}
-                  />
-                }
-              />
-              <Route
-                path="/employee-requests-history"
-                element={
-                  <ProtectedRoute
-                    roles="Employee"
-                    element={<EmployeeRequestHistory />}
-                  />
-                }
-              />
-              <Route
-                path="/employee-request-details/:id"
-                element={
-                  <ProtectedRoute
-                    roles="Employee"
-                    element={<EmployeeRequestInfo />}
-                  />
-                }
-              />
-              <Route
-                path="/employee-company"
-                element={
-                  <ProtectedRoute
-                    roles="Employee"
-                    element={<EmployeeCompany />}
-                  />
-                }
-              />
-            </Routes>
-          </div>
-        </main>
-      </div>
+                {/* ADMIN */}
+                <Route
+                  path="/admin-homepage"
+                  element={
+                    <ProtectedRoute
+                      roles={["Admin", "HR", "DepartmentHead"]}
+                      element={<AdminHomepage />}
+                    />
+                  }
+                />
+                <Route
+                  path="/admin-requests"
+                  element={
+                    <ProtectedRoute
+                      roles={["Admin", "HR", "DepartmentHead"]}
+                      element={<AdminRequests />}
+                    />
+                  }
+                />
+                <Route
+                  path="/admin-company"
+                  element={
+                    <ProtectedRoute
+                      roles={["Admin", "HR", "DepartmentHead"]}
+                      element={<AdminCompany />}
+                    />
+                  }
+                />
+                <Route
+                  path="/admin-user-management"
+                  element={
+                    <ProtectedRoute
+                      roles={["Admin", "HR", "DepartmentHead"]}
+                      element={<AdminUsermanagement />}
+                    />
+                  }
+                />
+                <Route
+                  path="/admin-archives-requests"
+                  element={
+                    <ProtectedRoute
+                      roles={["Admin", "HR", "DepartmentHead"]}
+                      element={<AdminArchivesRequest />}
+                    />
+                  }
+                />
+
+                {/* EMPLOYEE */}
+                <Route
+                  path="/employee-homepage"
+                  element={
+                    <ProtectedRoute
+                      roles="Employee"
+                      element={<EmployeeHomepage />}
+                    />
+                  }
+                />
+                <Route
+                  path="/employee-requests"
+                  element={
+                    <ProtectedRoute
+                      roles="Employee"
+                      element={<EmployeeRequest />}
+                    />
+                  }
+                />
+                <Route
+                  path="/employee-requests-history"
+                  element={
+                    <ProtectedRoute
+                      roles="Employee"
+                      element={<EmployeeRequestHistory />}
+                    />
+                  }
+                />
+                <Route
+                  path="/employee-request-details/:id"
+                  element={
+                    <ProtectedRoute
+                      roles="Employee"
+                      element={<EmployeeRequestInfo />}
+                    />
+                  }
+                />
+                <Route
+                  path="/employee-company"
+                  element={
+                    <ProtectedRoute
+                      roles="Employee"
+                      element={<EmployeeCompany />}
+                    />
+                  }
+                />
+              </Routes>
+            </div>
+          </main>
+        </div>
+      </userContext.Provider>
     </div>
   );
 };

@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { axiosInstance } from "../../utils/axiosInstance";
 import axios from "axios";
 import toast from "react-hot-toast";
-import type { UserInterface } from "../../types/user.types";
 import { Button } from "../../components/Button";
 import { AddUser } from "../../components/AddUser";
 import { CirclePlusIcon } from "lucide-react";
+import { userContext } from "../../context/UserContext";
 
 export const AdminUsermanagement: React.FC = () => {
-  const [users, setUsers] = useState<UserInterface[]>([]);
   const [role, _] = useState<string | null>(localStorage.getItem("role"));
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const context = useContext(userContext);
+  if (!context) return <div>Loading...</div>;
+  const { users, setUsers } = context;
 
   const handleEdit = (id: number) => {
     alert(`Edit user ${id}`);
   };
 
-  const handleDelete = (id: string) => {
-    setUsers(users.filter((user) => user.userId !== id));
+  const handleDelete = (id: number) => {
+    setUsers(users.filter((user) => user.id !== id));
     alert(`User ${id} deleted`);
   };
 
@@ -30,6 +32,7 @@ export const AdminUsermanagement: React.FC = () => {
       try {
         const res = await axiosInstance.get("/users/own-company");
         setUsers(res.data);
+        console.log("FROM CONTEXT", users);
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           let message = error?.response?.data?.message;
@@ -51,8 +54,8 @@ export const AdminUsermanagement: React.FC = () => {
           </p>
         </div>
         {role === "Admin" ? (
-          <Button 
-            text="Add User" 
+          <Button
+            text="Add User"
             icons={<CirclePlusIcon />}
             onClick={() => setIsModalOpen(true)}
           />
@@ -104,7 +107,7 @@ export const AdminUsermanagement: React.FC = () => {
                     {role === "Admin" ? (
                       <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
                         <button
-                          onClick={() => handleEdit(Number(user.userId))}
+                          onClick={() => handleEdit(Number(user.id))}
                           className="px-3 py-2 bg-blue-500 hover:bg-blue-600 cursor-pointer
                          text-white rounded-lg text-sm font-medium transition-colors
                           focus:outline-none focus:ring-2 focus:ring-blue-300"
@@ -112,7 +115,7 @@ export const AdminUsermanagement: React.FC = () => {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(user.userId)}
+                          onClick={() => handleDelete(user.id)}
                           className="px-3 py-2 bg-red-500 hover:bg-red-600 cursor-pointer
                          text-white rounded-lg text-sm font-medium transition-colors
                           focus:outline-none focus:ring-2 focus:ring-red-300"
