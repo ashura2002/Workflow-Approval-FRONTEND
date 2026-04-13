@@ -27,21 +27,26 @@ export const AdminUsermanagement: React.FC = () => {
     return isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
   };
 
-  useEffect(() => {
-    const getAllUsersOnCompany = async () => {
-      try {
-        const res = await axiosInstance.get("/users/own-company");
-        setUsers(res.data);
-        console.log("FROM CONTEXT", users);
-      } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-          let message = error?.response?.data?.message;
-          toast.error(message);
-        }
+  const getAllUsersOnCompany = async () => {
+    try {
+      const res = await axiosInstance.get("/users/own-company");
+      setUsers(res.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        let message = error?.response?.data?.message;
+        toast.error(message);
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     getAllUsersOnCompany();
-  }, []);
+  }, [setUsers]);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    getAllUsersOnCompany();
+  };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -153,7 +158,7 @@ export const AdminUsermanagement: React.FC = () => {
       )}
 
       {/* Add User Modal */}
-      <AddUser isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AddUser isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 };

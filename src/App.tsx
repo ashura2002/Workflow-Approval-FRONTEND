@@ -20,6 +20,7 @@ import {
   type User,
   type UserContextType,
 } from "../src/context/UserContext";
+import { AdminRequestInfo } from "./pages/admin/AdminRequestInfo";
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -90,6 +91,24 @@ const App: React.FC = () => {
                     <ProtectedRoute
                       roles={["Admin", "HR", "DepartmentHead"]}
                       element={<AdminUsermanagement />}
+                    />
+                  }
+                />
+                <Route
+                  path="/admin-archives-requests"
+                  element={
+                    <ProtectedRoute
+                      roles={["Admin", "HR", "DepartmentHead"]}
+                      element={<AdminArchivesRequest />}
+                    />
+                  }
+                />
+                <Route
+                  path="/admin-request-details/:id"
+                  element={
+                    <ProtectedRoute
+                      roles={["Admin", "HR", "DepartmentHead"]}
+                      element={<AdminRequestInfo />}
                     />
                   }
                 />
