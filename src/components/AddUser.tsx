@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   X,
   User,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { axiosInstance } from "../utils/axiosInstance";
 import toast from "react-hot-toast";
+import { userContext } from "../context/UserContext";
 
 interface AddUserProps {
   isOpen: boolean;
@@ -45,6 +46,10 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
     email: "",
     password: "",
   });
+  const context = useContext(userContext);
+  if (!context) return <div>Loading...</div>;
+  const { setUsers, users } = context;
+
   const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedRole, setSelectedRole] = useState<Role>("Employee");
 
@@ -134,8 +139,9 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
       };
 
       const response = await axiosInstance.post(endpoint, formData);
+      setUsers(response.data);
+      console.log(users);
       toast.success(response.data.message);
-      
       console.log({
         PANGDEBUG: "",
         ENDPOINTS: endpoint,
@@ -147,11 +153,6 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
       setFormData({ username: "", email: "", password: "" });
       setConfirmPassword("");
       setSelectedRole("Employee");
-
-      setTimeout(() => {
-        onClose();
-        setSubmitSuccess(false);
-      }, 1500);
     } catch (err) {
       setSubmitError(
         err instanceof Error
@@ -476,3 +477,5 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
     </>
   );
 };
+
+// STUDY how it works and types, Record Object
