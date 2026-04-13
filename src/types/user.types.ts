@@ -1,7 +1,7 @@
 import type { Role } from "./role.enums";
 
 export type UserInterface = {
-  userId: string;
+  id: number;
   email: string;
   role: Role;
   companyId: string;
