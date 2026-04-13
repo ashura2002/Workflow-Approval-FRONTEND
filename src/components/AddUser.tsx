@@ -139,8 +139,8 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
       };
 
       const response = await axiosInstance.post(endpoint, formData);
-      setUsers(response.data);
-      console.log(users);
+      const newUser = response.data;
+      setUsers((prev) => [...prev, newUser]);
       toast.success(response.data.message);
       console.log({
         PANGDEBUG: "",

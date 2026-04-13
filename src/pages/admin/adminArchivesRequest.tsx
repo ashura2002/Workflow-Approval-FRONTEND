@@ -3,9 +3,11 @@ import type { RequestData } from "../../types/RequestData.types";
 import { axiosInstance } from "../../utils/axiosInstance";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export const AdminArchivesRequest: React.FC = () => {
   const [archivedRequests, setArchiveRequests] = useState<RequestData[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getAllPendingReqs = async () => {
@@ -211,6 +213,9 @@ export const AdminArchivesRequest: React.FC = () => {
                   {archivedRequests.map((request) => (
                     <tr
                       key={request.id}
+                      onClick={() =>
+                        navigate(`/admin-request-details/${request.id}`)
+                      }
                       className={`hover:shadow-md transition-all duration-200 ${
                         request.status === "Approved"
                           ? "hover:bg-green-50"
