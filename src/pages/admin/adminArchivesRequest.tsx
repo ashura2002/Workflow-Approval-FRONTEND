@@ -27,11 +27,11 @@ export const AdminArchivesRequest: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Approved":
-        return "bg-green-100 text-green-800 border border-green-300";
+        return "bg-emerald-50 text-emerald-700 border-emerald-200 ring-1 ring-emerald-200/50";
       case "Rejected":
-        return "bg-red-100 text-red-800 border border-red-300";
+        return "bg-red-50 text-red-700 border-red-200 ring-1 ring-red-200/50";
       default:
-        return "bg-gray-100 text-gray-800 border border-gray-300";
+        return "bg-slate-100 text-slate-700 border-slate-200";
     }
   };
 
@@ -39,7 +39,7 @@ export const AdminArchivesRequest: React.FC = () => {
     switch (status) {
       case "Approved":
         return (
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -49,7 +49,7 @@ export const AdminArchivesRequest: React.FC = () => {
         );
       case "Rejected":
         return (
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -78,34 +78,34 @@ export const AdminArchivesRequest: React.FC = () => {
   ).length;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 md:p-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
             Archived Requests
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-slate-500 text-base">
             View all completed (approved or rejected) requests
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
           {/* Total Archives */}
-          <div className="bg-white rounded-2xl shadow-lg border-2 border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 transition-all hover:shadow-md">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-semibold uppercase tracking-wider">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Total Archives
                 </p>
-                <p className="text-4xl font-bold text-gray-900 mt-2">
+                <p className="text-3xl font-bold text-slate-800 mt-1">
                   {archivedRequests.length}
                 </p>
               </div>
-              <div className="p-4 bg-blue-100 rounded-lg">
+              <div className="p-3 bg-slate-100 rounded-xl">
                 <svg
-                  className="w-8 h-8 text-blue-600"
+                  className="w-6 h-6 text-slate-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -122,19 +122,19 @@ export const AdminArchivesRequest: React.FC = () => {
           </div>
 
           {/* Approved */}
-          <div className="bg-white rounded-2xl shadow-lg border-2 border-green-100 p-6 hover:shadow-xl transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 transition-all hover:shadow-md">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-semibold uppercase tracking-wider">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Approved
                 </p>
-                <p className="text-4xl font-bold text-green-600 mt-2">
+                <p className="text-3xl font-bold text-emerald-600 mt-1">
                   {approvedCount}
                 </p>
               </div>
-              <div className="p-4 bg-green-100 rounded-lg">
+              <div className="p-3 bg-emerald-50 rounded-xl">
                 <svg
-                  className="w-8 h-8 text-green-600"
+                  className="w-6 h-6 text-emerald-600"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -149,19 +149,19 @@ export const AdminArchivesRequest: React.FC = () => {
           </div>
 
           {/* Rejected */}
-          <div className="bg-white rounded-2xl shadow-lg border-2 border-red-100 p-6 hover:shadow-xl transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 transition-all hover:shadow-md">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-semibold uppercase tracking-wider">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Rejected
                 </p>
-                <p className="text-4xl font-bold text-red-600 mt-2">
+                <p className="text-3xl font-bold text-red-600 mt-1">
                   {rejectedCount}
                 </p>
               </div>
-              <div className="p-4 bg-red-100 rounded-lg">
+              <div className="p-3 bg-red-50 rounded-xl">
                 <svg
-                  className="w-8 h-8 text-red-600"
+                  className="w-6 h-6 text-red-600"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -178,75 +178,77 @@ export const AdminArchivesRequest: React.FC = () => {
 
         {/* Table Container */}
         {archivedRequests.length > 0 ? (
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-2 border-gray-100">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-linear-to-r from-blue-600 to-indigo-600 text-white">
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider">
+                  <tr className="bg-slate-50 border-b border-slate-200">
+                    <th className="px-4 md:px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                       ID
                     </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider">
+                    <th className="px-4 md:px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                       Leave Type
                     </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider hidden sm:table-cell">
+                    <th className="px-4 md:px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">
                       Start Date
                     </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider hidden lg:table-cell">
+                    <th className="px-4 md:px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden lg:table-cell">
                       End Date
                     </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider hidden md:table-cell">
+                    <th className="px-4 md:px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">
                       Reason
                     </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider hidden lg:table-cell">
+                    <th className="px-4 md:px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden lg:table-cell">
                       View To
                     </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider">
+                    <th className="px-4 md:px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider hidden md:table-cell">
+                    <th className="px-4 md:px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">
                       Completed Date
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-slate-100">
                   {archivedRequests.map((request) => (
                     <tr
                       key={request.id}
                       onClick={() =>
                         navigate(`/admin-request-details/${request.id}`)
                       }
-                      className={`hover:shadow-md transition-all duration-200 ${
+                      className={`cursor-pointer transition-all duration-150 hover:bg-slate-50 ${
                         request.status === "Approved"
-                          ? "hover:bg-green-50"
-                          : "hover:bg-red-50"
+                          ? "hover:bg-emerald-50/30"
+                          : "hover:bg-red-50/30"
                       }`}
                     >
-                      <td className="px-4 md:px-6 py-4 text-sm font-bold text-gray-900">
+                      <td className="px-4 md:px-6 py-4 text-sm font-semibold text-slate-800">
                         #{request.id}
                       </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-700">
-                        <span className="inline-block bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-semibold">
+                      <td className="px-4 md:px-6 py-4">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
                           {request.leaveType}
                         </span>
                       </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-700 hidden sm:table-cell">
+                      <td className="px-4 md:px-6 py-4 text-sm text-slate-600 hidden sm:table-cell">
                         {formatDate(request.startDate)}
                       </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-700 hidden lg:table-cell">
+                      <td className="px-4 md:px-6 py-4 text-sm text-slate-600 hidden lg:table-cell">
                         {formatDate(request.endDate)}
                       </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-700 hidden md:table-cell max-w-xs truncate">
+                      <td className="px-4 md:px-6 py-4 text-sm text-slate-600 hidden md:table-cell max-w-xs truncate">
                         {request.reason}
                       </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-700 hidden lg:table-cell">
-                        <span className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-semibold">
-                          {request.viewTo ? null : "Completed"}
+                      <td className="px-4 md:px-6 py-4 text-sm text-slate-600 hidden lg:table-cell">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100">
+                          {request.viewTo ? request.viewTo : "Completed"}
                         </span>
                       </td>
-                      <td className="px-4 md:px-6 py-4 text-sm">
+                      <td className="px-4 md:px-6 py-4">
                         <span
-                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(request.status)}`}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                            request.status,
+                          )}`}
                         >
                           {getStatusIcon(request.status)}
                           <span className="hidden sm:inline">
@@ -254,7 +256,7 @@ export const AdminArchivesRequest: React.FC = () => {
                           </span>
                         </span>
                       </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-600 hidden md:table-cell">
+                      <td className="px-4 md:px-6 py-4 text-sm text-slate-500 hidden md:table-cell">
                         {formatDate(request.updatedAt)}
                       </td>
                     </tr>
@@ -265,10 +267,10 @@ export const AdminArchivesRequest: React.FC = () => {
           </div>
         ) : (
           /* Empty State */
-          <div className="bg-white rounded-2xl shadow-2xl p-12 text-center border-2 border-gray-100">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
             <div className="mb-4">
               <svg
-                className="w-16 h-16 mx-auto text-gray-400"
+                className="w-16 h-16 mx-auto text-slate-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -281,26 +283,15 @@ export const AdminArchivesRequest: React.FC = () => {
                 />
               </svg>
             </div>
-            <p className="text-gray-600 text-xl font-semibold mb-2">
+            <p className="text-slate-700 text-lg font-semibold mb-1">
               No archived requests yet
             </p>
-            <p className="text-gray-500">
+            <p className="text-slate-500 text-sm">
               Requests will appear here once they are approved or rejected.
             </p>
           </div>
         )}
       </div>
-
-      <style>{`
-        @media (max-width: 640px) {
-          table {
-            font-size: 13px;
-          }
-          td, th {
-            padding: 12px 8px !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };
