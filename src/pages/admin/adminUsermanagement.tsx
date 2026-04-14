@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { axiosInstance } from "../../utils/axiosInstance";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -7,13 +7,17 @@ import { Button } from "../../components/Button";
 import { AddUser } from "../../components/AddUser";
 import { CirclePlusIcon } from "lucide-react";
 import { UpdateUser } from "../../components/UpdateUser";
+import { userContext } from "../../context/UserContext";
 
 export const AdminUsermanagement: React.FC = () => {
-  const [users, setUsers] = useState<UserInterface[]>([]);
+  const context = useContext(userContext);
+  if (!context) return <div>Loading...</div>;
+
+  const { users, setUsers } = context;
   const [role] = useState<string | null>(localStorage.getItem("role"));
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserInterface | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // for updte modal
+  const [selectedUser, setSelectedUser] = useState<UserInterface | null>(null); // user na e update
 
   const fetchUsers = async () => {
     try {
@@ -29,6 +33,7 @@ export const AdminUsermanagement: React.FC = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
   const handleEdit = (id: number) => {
     const user = users.find((u) => u.id === id);
     if (!user) return;
@@ -45,10 +50,7 @@ export const AdminUsermanagement: React.FC = () => {
     if (!selectedUser) return;
 
     try {
-      await axiosInstance.patch(
-        `/users/details/${Number(selectedUser.id)}`,
-        data,
-      );
+      await axiosInstance.patch(`/users/details/${selectedUser.id}`, data);
 
       toast.success("User updated successfully");
       setIsEditModalOpen(false);
@@ -62,7 +64,15 @@ export const AdminUsermanagement: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
-    // TODO: implement delete API
+    try {
+      const res = await axiosInstance.delete(`users/details/${id}`);
+      setUsers((prev) => prev.filter((user) => user.id !== id));
+      toast.success(res.data.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data?.message);
+      }
+    }
   };
 
   const getStatusColor = (isActive: boolean) => {
@@ -104,9 +114,9 @@ export const AdminUsermanagement: React.FC = () => {
 
             <tbody className="divide-y divide-gray-200">
               {users.length > 0 ? (
-                users.map((user) => (
+                users.map((user: UserInterface, index) => (
                   <tr
-                    key={user.email}
+                    key={index}
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-6 py-4 font-medium text-gray-900">
@@ -183,7 +193,7 @@ export const AdminUsermanagement: React.FC = () => {
                 role: selectedUser.role,
               }
             : undefined
-        } // default data 
+        } // default data
       />
     </div>
   );
