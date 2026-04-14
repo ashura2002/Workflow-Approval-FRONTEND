@@ -10,6 +10,21 @@ export const AdminHomepage: React.FC = () => {
   const [name, _] = useState<string | null>(localStorage.getItem("username"));
   const [usersLength, setUsersLength] = useState<number>();
   const [activeUsers, setActiveUsers] = useState<number>();
+  const [totalRequestPerDay, setTotalRequestPerDay] = useState<number>();
+
+  useEffect(() => {
+    const requestPerDay = async () => {
+      try {
+        const res = await axiosInstance.get("/requests/todays-record");
+        setTotalRequestPerDay(res.data.length);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error?.response?.data?.message);
+        }
+      }
+    };
+    requestPerDay();
+  }, []);
 
   useEffect(() => {
     const usersOnCompany = async () => {
@@ -54,6 +69,12 @@ export const AdminHomepage: React.FC = () => {
           cardTitle="Active Users"
           data={activeUsers ? activeUsers : 0}
           message="Currently on this company"
+        />
+
+        <Cards
+          cardTitle="Requests This Day"
+          data={totalRequestPerDay ? totalRequestPerDay : 0}
+          message="Total requests on this day"
         />
       </div>
 

@@ -12,6 +12,7 @@ export const AdminCompany: React.FC = () => {
   );
   const [company, setCompany] = useState<CompanyType>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState({
     companyName: "",
     description: "",
@@ -50,6 +51,7 @@ export const AdminCompany: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       await axiosInstance.patch(`/company/${companyId}`, formData);
       setCompany((prev) =>
@@ -68,12 +70,26 @@ export const AdminCompany: React.FC = () => {
       if (axios.isAxiosError(error)) {
         toast.error(error?.response?.data?.message);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this company?")) {
+  const handleDelete = async () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this company all users will also deleted?",
+      )
+    ) {
       alert("Company deleted");
+    }
+    try {
+      const res = await axiosInstance.delete(`/company/${company?.id}`);
+      toast.success(res.data.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data?.message);
+      }
     }
   };
 
@@ -251,7 +267,7 @@ export const AdminCompany: React.FC = () => {
                   type="submit"
                   className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium"
                 >
-                  Save Changes
+                  {isLoading ? "Loading..." : "Save Changes"}
                 </button>
               </div>
             </form>
