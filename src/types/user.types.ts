@@ -4,7 +4,7 @@ export type UserInterface = {
   id: number;
   email: string;
   role: Role;
-  companyId: string;
+  companyId: number;
   username: string;
   isActive?: boolean;
 };

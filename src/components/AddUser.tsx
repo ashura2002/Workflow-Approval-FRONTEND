@@ -14,6 +14,7 @@ import {
 import { axiosInstance } from "../utils/axiosInstance";
 import toast from "react-hot-toast";
 import { userContext } from "../context/UserContext";
+import axios from "axios";
 
 interface AddUserProps {
   isOpen: boolean;
@@ -48,8 +49,7 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
   });
   const context = useContext(userContext);
   if (!context) return <div>Loading...</div>;
-  const { setUsers, users } = context;
-
+  const { setUsers } = context;
   const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedRole, setSelectedRole] = useState<Role>("Employee");
 
@@ -132,33 +132,21 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
 
     try {
       const endpoint = ROLE_ENDPOINTS[selectedRole];
-      const payload: RegisterUserDTO = {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-      };
-
       const response = await axiosInstance.post(endpoint, formData);
-      const newUser = response.data;
+      const newUser = response.data.data;
+      console.log("newUser", newUser);
       setUsers((prev) => [...prev, newUser]);
       toast.success(response.data.message);
-      console.log({
-        PANGDEBUG: "",
-        ENDPOINTS: endpoint,
-        PAYLOAD: payload,
-        RESPONSE: response,
-      });
-
       setSubmitSuccess(true);
       setFormData({ username: "", email: "", password: "" });
       setConfirmPassword("");
       setSelectedRole("Employee");
-    } catch (err) {
-      setSubmitError(
-        err instanceof Error
-          ? err.message
-          : "Registration failed. Please try again.",
-      );
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        let message = err?.response?.data?.message;
+        toast.error(message);
+        setSubmitError(message);
+      }
     } finally {
       setIsSubmitting(false);
     }
