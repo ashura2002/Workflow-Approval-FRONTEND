@@ -50,7 +50,7 @@ const App: React.FC = () => {
             </aside>
           )}
 
-          <main className="overflow-y-auto w-full p-3">
+          <main className="m-3 overflow-y-auto w-full p-3">
             <div>
               <Routes>
                 {/* PUBLIC ROUTES */}
