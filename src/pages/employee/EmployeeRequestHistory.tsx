@@ -53,13 +53,13 @@ export const EmployeeRequestHistory: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Approved":
-        return "bg-green-100 text-green-800 border border-green-300";
+        return "bg-emerald-100 text-emerald-700 border border-emerald-200";
       case "Pending":
-        return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+        return "bg-amber-100 text-amber-700 border border-amber-200";
       case "Rejected":
-        return "bg-red-100 text-red-800 border border-red-300";
+        return "bg-rose-100 text-rose-700 border border-rose-200";
       default:
-        return "bg-gray-100 text-gray-800 border border-gray-300";
+        return "bg-slate-100 text-slate-700 border border-slate-200";
     }
   };
 
@@ -107,15 +107,15 @@ export const EmployeeRequestHistory: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 md:p-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-indigo-50/30 p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between flex-col md:flex-row gap-4">
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent mb-2">
+            <h1 className="text-3xl font-bold bg-linear-to-r from-slate-800 to-indigo-800 bg-clip-text text-transparent">
               Request History
             </h1>
-            <p className="text-gray-600 text-lg">
+            <p className="text-slate-500 mt-1">
               Track your leave and request submissions
             </p>
           </div>
@@ -123,7 +123,7 @@ export const EmployeeRequestHistory: React.FC = () => {
           <button
             onClick={handleDeleteAll}
             disabled={requests.length === 0}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 border-2 border-red-200 transition-all duration-200 font-semibold text-sm hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 transition-all duration-200 font-medium text-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             title="Delete all requests"
           >
             <svg
@@ -143,154 +143,120 @@ export const EmployeeRequestHistory: React.FC = () => {
           </button>
         </div>
 
-        {/* Table Container */}
+        {/* Card Grid Layout */}
         {requests.length > 0 ? (
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-2 border-gray-100">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-linear-to-r from-blue-600 to-indigo-600 text-white">
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider">
-                      ID
-                    </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider">
-                      Leave Type
-                    </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider hidden sm:table-cell">
-                      Start Date
-                    </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider hidden lg:table-cell">
-                      End Date
-                    </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider hidden md:table-cell">
-                      Reason
-                    </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider hidden lg:table-cell">
-                      View To
-                    </th>
-                    <th className="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-bold uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-4 md:px-6 py-4 text-center text-xs md:text-sm font-bold uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-20F0">
-                  {requests.map((request) => (
-                    <tr
-                      key={request.id}
-                      onClick={() =>
-                        navigate(`/employee-request-details/${request.id}`)
-                      }
-                      className="hover:bg-blue-50 transition-all duration-200 cursor-pointer group"
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {requests.map((request) => (
+              <div
+                key={request.id}
+                onClick={() => navigate(`/employee-request-details/${request.id}`)}
+                className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-slate-200 hover:border-indigo-200 overflow-hidden cursor-pointer"
+              >
+                <div className="p-5">
+                  {/* Header: ID and Status */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-mono text-slate-400 bg-slate-100 px-2 py-1 rounded">
+                      #{request.id}
+                    </span>
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(request.status)}`}
                     >
-                      <td className="px-4 md:px-6 py-4 text-sm font-bold text-gray-900">
-                        #{request.id}
-                      </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-700">
-                        <span className="inline-block bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-semibold group-hover:shadow-md transition-all">
-                          {request.leaveType}
-                        </span>
-                      </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-700 hidden sm:table-cell">
-                        {formatDate(request.startDate)}
-                      </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-700 hidden lg:table-cell">
-                        {formatDate(request.endDate)}
-                      </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-700 hidden md:table-cell max-w-xs truncate">
-                        {request.reason}
-                      </td>
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-700 hidden lg:table-cell">
-                        <span className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-semibold group-hover:shadow-md transition-all">
-                          {request.viewTo === null
-                            ? "Completed"
-                            : request.viewTo}
-                        </span>
-                      </td>
-                      <td className="px-4 md:px-6 py-4 text-sm">
-                        <span
-                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(request.status)}`}
-                        >
-                          {getStatusIcon(request.status)}
-                          <span className="hidden sm:inline">
-                            {request.status}
-                          </span>
-                        </span>
-                      </td>
-                      <td className="px-4 md:px-6 py-4 text-center">
-                        <button
-                          onClick={(e) => handleDelete(request.id, e)}
-                          className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 border-2 border-red-200 transition-all duration-200 font-medium text-xs hover:shadow-lg"
-                          title="Delete this request"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                          <span className="hidden sm:inline">Delete</span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      {getStatusIcon(request.status)}
+                      <span>{request.status}</span>
+                    </span>
+                  </div>
+
+                  {/* Leave Type */}
+                  <div className="mb-3">
+                    <h3 className="font-bold text-slate-800 text-lg">
+                      {request.leaveType}
+                    </h3>
+                  </div>
+
+                  {/* Date Range */}
+                  <div className="flex items-center justify-between text-sm text-slate-600 mb-3">
+                    <div className="flex items-center gap-1">
+                      <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span>{formatDate(request.startDate)}</span>
+                    </div>
+                    <span className="text-slate-300">→</span>
+                    <div className="flex items-center gap-1">
+                      <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span>{formatDate(request.endDate)}</span>
+                    </div>
+                  </div>
+
+                  {/* Reason (truncated) */}
+                  <div className="mb-3">
+                    <p className="text-sm text-slate-500 line-clamp-2 bg-slate-50 p-2 rounded-lg">
+                      {request.reason}
+                    </p>
+                  </div>
+
+                  {/* View To */}
+                  <div className="flex items-center justify-between text-xs text-slate-500 mb-4">
+                    <span className="font-medium">Assigned to:</span>
+                    <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full">
+                      {request.viewTo === null ? "Completed" : request.viewTo}
+                    </span>
+                  </div>
+
+                  {/* Action Button */}
+                  <div className="flex justify-end pt-2 border-t border-slate-100">
+                    <button
+                      onClick={(e) => handleDelete(request.id, e)}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 transition-all duration-200 text-xs font-medium"
+                      title="Delete this request"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           /* Empty State */
-          <div className="bg-white rounded-2xl shadow-2xl p-12 text-center border-2 border-gray-100">
-            <div className="mb-4">
-              <svg
-                className="w-16 h-16 mx-auto text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-12 text-center">
+            <div className="max-w-sm mx-auto">
+              <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-10 h-10 text-indigo-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <p className="text-xl font-semibold text-slate-700 mb-2">
+                No requests found
+              </p>
+              <p className="text-slate-500 mb-6">
+                You haven't submitted any leave requests yet.
+              </p>
+              <button
+                onClick={() => navigate("/employee-homepage")}
+                className="px-5 py-2.5 rounded-xl bg-linear-to-r from-indigo-600 to-indigo-500 text-white hover:shadow-lg transition-all duration-200 font-medium"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+                Back to Dashboard
+              </button>
             </div>
-            <p className="text-gray-600 text-xl font-semibold mb-2">
-              No requests found
-            </p>
-            <p className="text-gray-500 mb-6">
-              You haven't submitted any leave requests yet.
-            </p>
-            <button
-              onClick={() => navigate("/employee-homepage")}
-              className="px-6 py-3 rounded-lg bg-linear-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg transition-all duration-200 font-semibold hover:from-blue-700 hover:to-indigo-700"
-            >
-              Back to Dashboard
-            </button>
           </div>
         )}
       </div>
-
-      <style>{`
-        @media (max-width: 640px) {
-          table {
-            font-size: 13px;
-          }
-          td, th {
-            padding: 12px 8px !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };
