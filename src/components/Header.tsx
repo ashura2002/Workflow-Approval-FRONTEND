@@ -9,6 +9,14 @@ import { axiosInstance } from "../utils/axiosInstance";
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const [isModalShow, setIsModalShow] = useState<boolean>(false);
+  const [role, _] = useState<string | null>(localStorage.getItem("role"));
+  const goToEmployeeProfile = () => {
+    navigate("/employee-profile");
+  };
+
+  const goToAdminProfile = () => {
+    navigate("/admin-profile");
+  };
 
   const openLogoutModal = () => {
     setIsModalShow(true);
@@ -52,7 +60,12 @@ const Header: React.FC = () => {
           {/* Right side: user actions */}
           <div className="flex items-center gap-3">
             {/* User profile button with badge */}
-            <button className="relative p-2 text-slate-600 hover:text-violet-600 rounded-full hover:bg-violet-50 transition-all duration-200">
+            <button
+              className="relative p-2 text-slate-600 hover:text-violet-600 rounded-full hover:bg-violet-50 transition-all duration-200"
+              onClick={
+                role === "Employee" ? goToEmployeeProfile : goToAdminProfile
+              }
+            >
               <FiUser size={20} />
               <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white"></span>
             </button>

@@ -7,6 +7,8 @@ import {
   Newspaper,
   NotepadTextDashed,
   Users,
+  UserRound,
+  UserCircle,
 } from "lucide-react";
 
 export const adminNavLinks = [
@@ -35,6 +37,11 @@ export const adminNavLinks = [
     path: "/admin-archives-requests",
     icon: Archive,
   },
+  {
+    linkName: "Profile",
+    path: "/admin-profile",
+    icon: UserRound,
+  },
 ];
 
 export const employeeLinks = [
@@ -58,5 +65,11 @@ export const employeeLinks = [
     linkName: "Company",
     path: "/employee-company",
     icon: Building2Icon,
+  },
+
+  {
+    linkName: "Profile",
+    path: "/employee-profile",
+    icon: UserCircle,
   },
 ];
