@@ -21,6 +21,8 @@ import {
   type UserContextType,
 } from "../src/context/UserContext";
 import { AdminRequestInfo } from "./pages/admin/AdminRequestInfo";
+import { EmployeeUserProfileForm } from "./pages/employee/EmployeeProfilePage";
+import { AdminProfilepage } from "./pages/admin/AdminProfilepage";
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -67,6 +69,16 @@ const App: React.FC = () => {
                     />
                   }
                 />
+                <Route
+                  path="/admin-profile"
+                  element={
+                    <ProtectedRoute
+                      roles={["Admin", "HR", "DepartmentHead"]}
+                      element={<AdminProfilepage />}
+                    />
+                  }
+                />
+
                 <Route
                   path="/admin-requests"
                   element={
@@ -132,6 +144,17 @@ const App: React.FC = () => {
                     />
                   }
                 />
+
+                <Route
+                  path="/employee-profile"
+                  element={
+                    <ProtectedRoute
+                      roles="Employee"
+                      element={<EmployeeUserProfileForm />}
+                    />
+                  }
+                />
+
                 <Route
                   path="/employee-requests"
                   element={

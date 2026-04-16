@@ -112,7 +112,9 @@ export const EmployeeRequestInfo: React.FC = () => {
           <div className="mb-4">
             <div className="w-12 h-12 mx-auto border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
           </div>
-          <p className="text-slate-600 font-medium">Loading request details...</p>
+          <p className="text-slate-600 font-medium">
+            Loading request details...
+          </p>
         </div>
       </div>
     );
@@ -213,7 +215,9 @@ export const EmployeeRequestInfo: React.FC = () => {
                 <p className="text-xs font-semibold opacity-90">
                   Current Status
                 </p>
-                <p className="text-xl md:text-2xl font-bold">{request.status}</p>
+                <p className="text-xl md:text-2xl font-bold">
+                  {request.status}
+                </p>
               </div>
             </div>
             <div className="text-right">
