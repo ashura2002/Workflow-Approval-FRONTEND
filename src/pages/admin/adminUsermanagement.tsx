@@ -8,10 +8,12 @@ import { AddUser } from "../../components/AddUser";
 import { CirclePlusIcon } from "lucide-react";
 import { UpdateUser } from "../../components/UpdateUser";
 import { userContext } from "../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export const AdminUsermanagement: React.FC = () => {
   const context = useContext(userContext);
   if (!context) return <div>Loading...</div>;
+  const navigate = useNavigate();
 
   const { users, setUsers } = context;
   const [role] = useState<string | null>(localStorage.getItem("role"));
@@ -57,6 +59,10 @@ export const AdminUsermanagement: React.FC = () => {
         toast.error(error?.response?.data?.message);
       }
     }
+  };
+
+  const gotoUserDetails = (userId: number) => {
+    navigate(`/admin-user-details/${userId}`);
   };
 
   const handleDelete = async (id: number) => {
@@ -105,6 +111,7 @@ export const AdminUsermanagement: React.FC = () => {
           <div className="space-y-3">
             {users.map((user: UserInterface) => (
               <div
+                onClick={() => gotoUserDetails(user.id)}
                 key={user.id}
                 className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 hover:border-indigo-200 overflow-hidden"
               >
