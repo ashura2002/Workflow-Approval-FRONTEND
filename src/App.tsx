@@ -23,6 +23,7 @@ import {
 import { AdminRequestInfo } from "./pages/admin/AdminRequestInfo";
 import { EmployeeUserProfileForm } from "./pages/employee/EmployeeProfilePage";
 import { AdminProfilepage } from "./pages/admin/AdminProfilepage";
+import { AdminUserDetails } from "./pages/admin/AdminUserDetails";
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -66,6 +67,15 @@ const App: React.FC = () => {
                     <ProtectedRoute
                       roles={["Admin", "HR", "DepartmentHead"]}
                       element={<AdminHomepage />}
+                    />
+                  }
+                />
+                <Route
+                  path="/admin-user-details/:id"
+                  element={
+                    <ProtectedRoute
+                      roles={["Admin", "HR", "DepartmentHead"]}
+                      element={<AdminUserDetails />}
                     />
                   }
                 />
