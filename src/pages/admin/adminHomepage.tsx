@@ -5,9 +5,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import type { UserInterface } from "../../types/user.types";
 import {
-  FiUsers,
-  FiUserCheck,
-  FiShield,
   FiTrendingUp,
   FiActivity,
   FiCalendar,
@@ -16,6 +13,7 @@ import {
   FiXCircle,
 } from "react-icons/fi";
 import type { RequestStatus } from "../../types/Status.types";
+import { workflowSteps } from "../../utils/mockdata";
 
 export const AdminHomepage: React.FC = () => {
   const [name, _] = useState<string | null>(localStorage.getItem("username"));
@@ -77,30 +75,6 @@ export const AdminHomepage: React.FC = () => {
     };
     usersOnCompany();
   }, []);
-
-  const workflowSteps = [
-    {
-      title: "Department Head",
-      icon: FiUsers,
-      description: "First approval level",
-      color: "from-blue-500 to-cyan-500",
-      stepNumber: 1,
-    },
-    {
-      title: "HR",
-      icon: FiUserCheck,
-      description: "Second approval level",
-      color: "from-indigo-500 to-purple-500",
-      stepNumber: 2,
-    },
-    {
-      title: "Admin",
-      icon: FiShield,
-      description: "Final approval level",
-      color: "from-purple-500 to-pink-500",
-      stepNumber: 3,
-    },
-  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -174,7 +148,7 @@ export const AdminHomepage: React.FC = () => {
             <Cards
               cardTitle="Today's Requests"
               data={totalRequestPerDay}
-              message="Total requests today"
+              message="Total today's requests"
             />
           </div>
         </div>
