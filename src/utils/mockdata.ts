@@ -1,3 +1,5 @@
+import { FiShield, FiUserCheck, FiUsers } from "react-icons/fi";
+
 export const hompageCardData = [
   {
     cardTitle: "Users",
@@ -114,5 +116,29 @@ export const requestDataShape = [
     userId: 6,
     viewTo: "DepartmentHead",
     companyId: 2,
+  },
+];
+
+export const workflowSteps = [
+  {
+    title: "Department Head",
+    icon: FiUsers,
+    description: "First approval level",
+    color: "from-blue-500 to-cyan-500",
+    stepNumber: 1,
+  },
+  {
+    title: "HR",
+    icon: FiUserCheck,
+    description: "Second approval level",
+    color: "from-indigo-500 to-purple-500",
+    stepNumber: 2,
+  },
+  {
+    title: "Admin",
+    icon: FiShield,
+    description: "Final approval level",
+    color: "from-purple-500 to-pink-500",
+    stepNumber: 3,
   },
 ];
