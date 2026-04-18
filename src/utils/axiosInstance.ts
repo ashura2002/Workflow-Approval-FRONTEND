@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:8000";
+
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL: baseURL,
 });
 
 // Request interceptor to attach token to headers
