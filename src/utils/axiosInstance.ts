@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:8000";
+// const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:8000";
 
 export const axiosInstance = axios.create({
-  baseURL: baseURL,
+  baseURL: "https://approval-workflow-system.vercel.app",
 });
 
 // Request interceptor to attach token to headers
