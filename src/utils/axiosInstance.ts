@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: 'https://approval-workflow-system.vercel.app',
+  baseURL: "https://approval-workflow-system.vercel.app",
   timeout: 10000,
 });
 
