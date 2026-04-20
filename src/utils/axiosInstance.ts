@@ -3,6 +3,7 @@ import axios from "axios";
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL || "http://localhost:8000",
   timeout: 10000,
+  withCredentials: true,
 });
 
 // Request interceptor to attach token to headers
