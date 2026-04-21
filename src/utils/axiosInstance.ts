@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL || "http://localhost:8000",
+  baseURL: import.meta.env.VITE_BASE_URL,
 });
 
 // Request interceptor to attach token to headers
@@ -11,6 +11,7 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    config.withCredentials = false;
     return config;
   },
   (error) => {
