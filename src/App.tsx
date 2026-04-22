@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
@@ -25,9 +25,28 @@ import { EmployeeUserProfileForm } from "./pages/employee/EmployeeProfilePage";
 import { AdminProfilepage } from "./pages/admin/AdminProfilepage";
 import { AdminUserDetails } from "./pages/admin/AdminUserDetails";
 
+// Hook to lock body scroll when sidebar is open
+const useLockBodyScroll = (lock: boolean) => {
+  useEffect(() => {
+    if (lock) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [lock]);
+};
+
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const location = useLocation();
+
+  // State to control mobile sidebar visibility
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Lock body scroll when mobile sidebar is open
+  useLockBodyScroll(isMobileSidebarOpen);
 
   const contextValue: UserContextType = {
     users,
@@ -37,30 +56,92 @@ const App: React.FC = () => {
   const isHomePage =
     location.pathname === "/" || location.pathname === "/register";
 
+  const toggleMobileSidebar = () => {
+    setIsMobileSidebarOpen((prev) => !prev);
+  };
+
+  const closeMobileSidebar = () => {
+    setIsMobileSidebarOpen(false);
+  };
+
   return (
     <div>
       <userContext.Provider value={contextValue}>
         {!isHomePage && (
           <header>
-            <Header />
+            <Header
+              isMobileSidebarOpen={isMobileSidebarOpen}
+              onToggleMobileSidebar={toggleMobileSidebar}
+            />
           </header>
         )}
 
         <div className="flex h-screen">
+          {/* Desktop Sidebar - visible on lg screens and above */}
           {!isHomePage && (
-            <aside className="w-64">
+            <aside className="hidden lg:block w-64 bg-white shadow-md overflow-y-auto">
               <Sidebar />
             </aside>
           )}
 
-          <main className="m-3 overflow-y-auto w-full p-3">
-            <div>
+          {/* Mobile Sidebar Overlay - Slide-out panel for mobile devices */}
+          {!isHomePage && isMobileSidebarOpen && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300"
+                onClick={closeMobileSidebar}
+              />
+
+              {/* Sidebar panel */}
+              <aside className="fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-2xl transform transition-transform duration-300 ease-out lg:hidden">
+                {/* Close button inside sidebar for quick access */}
+                <div className="flex justify-end p-3 border-b border-gray-100">
+                  <button
+                    onClick={closeMobileSidebar}
+                    className="p-2 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-colors"
+                    aria-label="Close menu"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div className="overflow-y-auto h-full pb-4">
+                  {/* Pass close function to Sidebar for navigation clicks on mobile */}
+                  <Sidebar onNavigate={closeMobileSidebar} />
+                </div>
+              </aside>
+            </>
+          )}
+
+          {/* Main Content Area - Responsive padding */}
+          <main
+            className={`
+              flex-1 overflow-y-auto 
+              p-4 sm:p-5 md:p-6 lg:p-8
+              transition-all duration-300
+              ${!isHomePage && "lg:ml-0"}
+            `}
+          >
+            <div className="max-w-7xl mx-auto">
               <Routes>
                 {/* PUBLIC ROUTES */}
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
 
-                {/* ADMIN */}
+                {/* ADMIN ROUTES */}
                 <Route
                   path="/admin-homepage"
                   element={
@@ -88,7 +169,6 @@ const App: React.FC = () => {
                     />
                   }
                 />
-
                 <Route
                   path="/admin-requests"
                   element={
@@ -134,17 +214,8 @@ const App: React.FC = () => {
                     />
                   }
                 />
-                <Route
-                  path="/admin-archives-requests"
-                  element={
-                    <ProtectedRoute
-                      roles={["Admin", "HR", "DepartmentHead"]}
-                      element={<AdminArchivesRequest />}
-                    />
-                  }
-                />
 
-                {/* EMPLOYEE */}
+                {/* EMPLOYEE ROUTES */}
                 <Route
                   path="/employee-homepage"
                   element={
@@ -154,7 +225,6 @@ const App: React.FC = () => {
                     />
                   }
                 />
-
                 <Route
                   path="/employee-profile"
                   element={
@@ -164,7 +234,6 @@ const App: React.FC = () => {
                     />
                   }
                 />
-
                 <Route
                   path="/employee-requests"
                   element={

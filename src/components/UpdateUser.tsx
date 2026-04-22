@@ -56,17 +56,18 @@ export const UpdateUser: React.FC<UpdateUserProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 p-6 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 p-4 sm:p-6 relative">
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-4 sm:mb-5">
           <div>
-            <h2 className="text-lg font-semibold text-gray-800">Update User</h2>
-            <p className="text-sm text-gray-500">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-800">
+              Update User
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500">
               Modify user details and role
             </p>
           </div>
-
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-gray-100 transition"
@@ -76,8 +77,7 @@ export const UpdateUser: React.FC<UpdateUserProps> = ({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Username */}
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
               <User size={16} className="text-gray-500" />
@@ -97,7 +97,6 @@ export const UpdateUser: React.FC<UpdateUserProps> = ({
             </div>
           </div>
 
-          {/* Password */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
               <Lock size={16} className="text-gray-500" />
@@ -116,7 +115,6 @@ export const UpdateUser: React.FC<UpdateUserProps> = ({
             </div>
           </div>
 
-          {/* Role */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
               <ShieldCheck size={16} className="text-gray-500" />
@@ -140,19 +138,17 @@ export const UpdateUser: React.FC<UpdateUserProps> = ({
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex justify-end gap-2 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-100 transition"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-100 transition"
             >
               Cancel
             </button>
-
             <button
               type="submit"
-              className="px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-sm transition flex items-center gap-2"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-sm transition flex items-center gap-2"
             >
               <ShieldCheck size={16} />
               Save Changes
