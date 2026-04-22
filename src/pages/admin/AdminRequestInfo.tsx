@@ -4,25 +4,47 @@ import type { RequestData } from "../../types/RequestData.types";
 import { axiosInstance } from "../../utils/axiosInstance";
 import axios from "axios";
 import toast from "react-hot-toast";
+import {
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
+  Clock,
+  AlertCircle,
+} from "lucide-react";
+
+// Skeleton loader component
+const SkeletonField: React.FC = () => (
+  <div className="flex flex-col gap-1.5 animate-pulse">
+    <div className="h-3 bg-slate-200 rounded w-20"></div>
+    <div className="h-10 bg-slate-100 rounded-xl"></div>
+  </div>
+);
 
 export const AdminRequestInfo: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [request, setRequest] = useState<RequestData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>("");
   const [adminNote, setAdminNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const getRequestDetails = async () => {
       try {
+        setIsLoading(true);
+        setError("");
         const res = await axiosInstance.get(`/requests/${id}`);
         setRequest(res.data);
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           const errorMessage =
             error?.response?.data?.message || "Request not found";
+          setError(errorMessage);
           toast.error(errorMessage);
+        } else {
+          setError("An unexpected error occurred");
+          toast.error("An unexpected error occurred");
         }
         setRequest(null);
       } finally {
@@ -48,6 +70,8 @@ export const AdminRequestInfo: React.FC = () => {
         const errorMessage =
           error?.response?.data?.message || "Failed to update request";
         toast.error(errorMessage);
+      } else {
+        toast.error("An unexpected error occurred");
       }
     } finally {
       setIsSubmitting(false);
@@ -106,52 +130,77 @@ export const AdminRequestInfo: React.FC = () => {
         {label}
       </span>
       <div
-        className={`text-sm text-slate-700 bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-2.5 transition-all duration-200 ${
+        className={`text-sm text-slate-700 bg-slate-50/50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 transition-all duration-200 ${
           mono ? "font-mono text-xs text-slate-600" : "font-medium"
-        }`}
+        } wrap-break-word`}
       >
         {value}
       </div>
     </div>
   );
 
+  // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 mx-auto border-4 border-slate-200 border-t-indigo-500 rounded-full animate-spin mb-4" />
-          <p className="text-slate-600 font-medium">
-            Loading request details...
-          </p>
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-4 sm:p-6 md:p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-10 bg-slate-200 rounded-xl w-48 mb-6"></div>
+            <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-5 sm:p-6 mb-8">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
+                <div>
+                  <div className="h-7 bg-slate-200 rounded w-40 mb-2"></div>
+                  <div className="h-4 bg-slate-200 rounded w-64"></div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="h-10 w-24 bg-slate-200 rounded-xl"></div>
+                  <div className="h-10 w-24 bg-slate-200 rounded-xl"></div>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-8">
+                <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-5 sm:p-6">
+                  <div className="h-5 bg-slate-200 rounded w-32 mb-5"></div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <SkeletonField />
+                    <SkeletonField />
+                    <SkeletonField />
+                    <SkeletonField />
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-8">
+                <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-5 sm:p-6">
+                  <div className="h-5 bg-slate-200 rounded w-24 mb-5"></div>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-slate-200 rounded-xl"></div>
+                    <div>
+                      <div className="h-4 bg-slate-200 rounded w-24 mb-2"></div>
+                      <div className="h-3 bg-slate-200 rounded w-32"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!request) {
+  // Error state
+  if (error || !request) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center p-6">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200 p-8 text-center max-w-md w-full">
-          <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg
-              className="w-8 h-8 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-          </div>
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4 sm:p-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-red-200 p-6 sm:p-8 text-center max-w-md w-full">
+          <AlertCircle className="w-12 h-12 sm:w-16 sm:h-16 text-red-500 mx-auto mb-4" />
           <p className="text-slate-800 font-semibold text-xl mb-2">
             Request not found
           </p>
           <p className="text-slate-500 text-sm mb-6">
-            This record may have been removed or you may not have access.
+            {error ||
+              "This record may have been removed or you may not have access."}
           </p>
           <button
             onClick={() => navigate(-1)}
@@ -166,79 +215,58 @@ export const AdminRequestInfo: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100">
-      {/* Modern sticky header */}
-      <div className="sticky top-3 left-9 rounded-2xl w-96 bg-white backdrop-blur-md border-b border-slate-200/80 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <button
-              onClick={() => navigate(-1)}
-              className="hover:text-slate-900 transition-colors flex items-center gap-1"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+      {/* Responsive Sticky Header */}
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            {/* Breadcrumb navigation */}
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 overflow-x-auto whitespace-nowrap pb-1 sm:pb-0">
+              <button
+                onClick={() => navigate(-1)}
+                className="hover:text-slate-900 transition-colors flex items-center gap-1"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Leave Requests
-            </button>
-            <svg
-              className="w-3.5 h-3.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-            <span className="font-semibold text-slate-800">
-              Request #{request.id}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            {request.status === "Pending" && (
-              <span className="flex items-center gap-1.5 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-full shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                Awaiting review
+                <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                Leave Requests
+              </button>
+              <span className="text-slate-300">/</span>
+              <span className="font-semibold text-slate-800">
+                Request #{request.id}
               </span>
-            )}
-            <span
-              className={`flex items-center gap-1.5 text-xs font-medium border px-3 py-1.5 rounded-full shadow-sm ${getStatusBadge(
-                request.status,
-              )}`}
-            >
+            </div>
+
+            {/* Status badges */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {request.status === "Pending" && (
+                <span className="flex items-center gap-1.5 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full shadow-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                  Awaiting review
+                </span>
+              )}
               <span
-                className={`w-1.5 h-1.5 rounded-full ${getStatusDot(
+                className={`flex items-center gap-1.5 text-xs font-medium border px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full shadow-sm ${getStatusBadge(
                   request.status,
                 )}`}
-              />
-              {request.status}
-            </span>
+              >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${getStatusDot(
+                    request.status,
+                  )}`}
+                />
+                {request.status}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Summary card with linear accent */}
-        <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-5 transition-all hover:shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Summary Card */}
+        <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-5 sm:p-6 mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:shadow-lg">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h1 className="text-2xl md:text-3xl font-bold bg-linear-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                Request #{request.id}
-              </h1>
-            </div>
-            <p className="text-sm text-slate-500">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-linear-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+              Request #{request.id}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
               Submitted {formatDate(request.createdAt)} • {request.leaveType} •{" "}
               {Math.ceil(
                 (new Date(request.endDate).getTime() -
@@ -254,53 +282,29 @@ export const AdminRequestInfo: React.FC = () => {
               <button
                 onClick={() => handleDecision("Approved")}
                 disabled={isSubmitting}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex-1 sm:flex-none"
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+                <CheckCircle className="w-4 h-4" />
                 Approve
               </button>
               <button
                 onClick={() => handleDecision("Rejected")}
                 disabled={isSubmitting}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-red-50 text-red-600 border border-red-200 text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-white hover:bg-red-50 text-red-600 border border-red-200 text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60 flex-1 sm:flex-none"
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <XCircle className="w-4 h-4" />
                 Reject
               </button>
             </div>
           )}
         </div>
 
-        {/* Two-column grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main content */}
-          <div className="lg:col-span-2 space-y-8">
+        {/* Two-column responsive grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+          {/* Main content - 2/3 on desktop */}
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             {/* Leave Information Card */}
-            <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 transition-all hover:shadow-lg">
+            <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-5 sm:p-6 transition-all hover:shadow-lg">
               <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-5 flex items-center gap-2">
                 <svg
                   className="w-4 h-4"
@@ -317,7 +321,7 @@ export const AdminRequestInfo: React.FC = () => {
                 </svg>
                 Leave Information
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-5">
                 <ReadOnlyField label="Leave type" value={request.leaveType} />
                 <ReadOnlyField
                   label="Duration"
@@ -341,14 +345,14 @@ export const AdminRequestInfo: React.FC = () => {
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Reason
                 </span>
-                <div className="text-sm text-slate-700 bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 font-medium leading-relaxed">
+                <div className="text-sm text-slate-700 bg-slate-50/50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 font-medium leading-relaxed wrap-break-word">
                   {request.reason}
                 </div>
               </div>
             </div>
 
             {/* Metadata Card */}
-            <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 transition-all hover:shadow-lg">
+            <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-5 sm:p-6 transition-all hover:shadow-lg">
               <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-5 flex items-center gap-2">
                 <svg
                   className="w-4 h-4"
@@ -365,7 +369,7 @@ export const AdminRequestInfo: React.FC = () => {
                 </svg>
                 Record Metadata
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <ReadOnlyField
                   label="Created at"
                   value={formatDate(request.createdAt)}
@@ -391,10 +395,10 @@ export const AdminRequestInfo: React.FC = () => {
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-8">
+          {/* Sidebar - 1/3 on desktop */}
+          <div className="space-y-6 sm:space-y-8">
             {/* Employee Snapshot */}
-            <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 transition-all hover:shadow-lg">
+            <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-5 sm:p-6 transition-all hover:shadow-lg">
               <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-5 flex items-center gap-2">
                 <svg
                   className="w-4 h-4"
@@ -412,7 +416,7 @@ export const AdminRequestInfo: React.FC = () => {
                 Employee
               </h2>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-sm font-bold text-indigo-700 shadow-inner">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-sm font-bold text-indigo-700 shadow-inner">
                   {String(request.userId).slice(0, 2).toUpperCase()}
                 </div>
                 <div>
@@ -428,7 +432,7 @@ export const AdminRequestInfo: React.FC = () => {
 
             {/* Admin Decision Panel (only for pending) */}
             {request.status === "Pending" && (
-              <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 transition-all hover:shadow-lg">
+              <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-5 sm:p-6 transition-all hover:shadow-lg">
                 <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-5 flex items-center gap-2">
                   <svg
                     className="w-4 h-4"
@@ -450,66 +454,30 @@ export const AdminRequestInfo: React.FC = () => {
                   onChange={(e) => setAdminNote(e.target.value)}
                   rows={3}
                   placeholder="Add a note or reason for your decision..."
-                  className="w-full text-sm text-slate-700 bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition-all placeholder:text-slate-400 mb-4"
+                  className="w-full text-sm text-slate-700 bg-slate-50/50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition-all placeholder:text-slate-400 mb-4"
                 />
                 <div className="space-y-3">
                   <button
                     onClick={() => handleDecision("Approved")}
                     disabled={isSubmitting}
-                    className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-60"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-60"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
+                    <CheckCircle className="w-4 h-4" />
                     Approve request
                   </button>
                   <button
                     onClick={() => handleDecision("Rejected")}
                     disabled={isSubmitting}
-                    className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white hover:bg-red-50 text-red-600 border border-red-200 text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-white hover:bg-red-50 text-red-600 border border-red-200 text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
+                    <XCircle className="w-4 h-4" />
                     Reject request
                   </button>
                   <button
                     disabled={isSubmitting}
-                    className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                    <AlertCircle className="w-4 h-4" />
                     Request more info
                   </button>
                 </div>
@@ -517,21 +485,9 @@ export const AdminRequestInfo: React.FC = () => {
             )}
 
             {/* Activity Log Timeline */}
-            <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 transition-all hover:shadow-lg">
+            <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-5 sm:p-6 transition-all hover:shadow-lg">
               <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-5 flex items-center gap-2">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <Clock className="w-4 h-4" />
                 Activity Log
               </h2>
               <div className="flow-root">
@@ -541,19 +497,7 @@ export const AdminRequestInfo: React.FC = () => {
                     <div className="relative flex items-start space-x-3">
                       <div className="relative">
                         <div className="h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center ring-4 ring-white">
-                          <svg
-                            className="w-3 h-3 text-emerald-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
+                          <CheckCircle className="w-3 h-3 text-emerald-600" />
                         </div>
                       </div>
                       <div className="min-w-0 flex-1">
@@ -611,32 +555,11 @@ export const AdminRequestInfo: React.FC = () => {
                                 : "bg-red-100"
                             }`}
                           >
-                            <svg
-                              className={`w-3 h-3 ${
-                                request.status === "Approved"
-                                  ? "text-emerald-600"
-                                  : "text-red-600"
-                              }`}
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              {request.status === "Approved" ? (
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M5 13l4 4L19 7"
-                                />
-                              ) : (
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              )}
-                            </svg>
+                            {request.status === "Approved" ? (
+                              <CheckCircle className="w-3 h-3 text-emerald-600" />
+                            ) : (
+                              <XCircle className="w-3 h-3 text-red-600" />
+                            )}
                           </div>
                         </div>
                         <div className="min-w-0 flex-1">
@@ -656,19 +579,7 @@ export const AdminRequestInfo: React.FC = () => {
                       <div className="relative flex items-start space-x-3">
                         <div className="relative">
                           <div className="h-6 w-6 rounded-full bg-slate-100 flex items-center justify-center ring-4 ring-white">
-                            <svg
-                              className="w-3 h-3 text-slate-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
+                            <Clock className="w-3 h-3 text-slate-400" />
                           </div>
                         </div>
                         <div className="min-w-0 flex-1">

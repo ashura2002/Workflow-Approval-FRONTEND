@@ -19,6 +19,7 @@ import axios from "axios";
 interface AddUserProps {
   isOpen: boolean;
   onClose: () => void;
+  onUserAdded?: () => void; // optional callback to refresh parent list
 }
 
 type Role = "Employee" | "DepartmentHead" | "HR";
@@ -41,7 +42,11 @@ interface RegisterUserDTO {
   password: string;
 }
 
-export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
+export const AddUser: React.FC<AddUserProps> = ({
+  isOpen,
+  onClose,
+  onUserAdded,
+}) => {
   const [formData, setFormData] = useState<RegisterUserDTO>({
     username: "",
     email: "",
@@ -134,9 +139,9 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
       const endpoint = ROLE_ENDPOINTS[selectedRole];
       const response = await axiosInstance.post(endpoint, formData);
       const newUser = response.data.data;
-      console.log("newUser", newUser);
       setUsers((prev) => [...prev, newUser]);
       toast.success(response.data.message);
+      if (onUserAdded) onUserAdded();
       setSubmitSuccess(true);
       setFormData({ username: "", email: "", password: "" });
       setConfirmPassword("");
@@ -180,29 +185,29 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
         aria-hidden="true"
       />
 
-      {/* Modal */}
+      {/* Modal - responsive width: full on mobile, max-w-xl on larger screens */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div
           ref={modalRef}
-          className="relative w-full max-w-110  bg-white rounded-2xl border border-zinc-200 shadow-xl"
+          className="relative w-full max-w-xl bg-white rounded-2xl border border-zinc-200 shadow-xl"
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
         >
           {/* Header */}
-          <div className="flex items-start gap-3 px-5 pt-5 pb-4">
-            <div className="w-9 h-9 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center shrink-0">
+          <div className="flex items-start gap-3 px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-zinc-200 bg-zinc-50 flex items-center justify-center shrink-0">
               <UserPlus size={16} className="text-zinc-500" />
             </div>
             <div className="flex-1 min-w-0">
               <h2
                 id="modal-title"
-                className="text-[15px] font-semibold text-zinc-900 leading-snug"
+                className="text-sm sm:text-[15px] font-semibold text-zinc-900 leading-snug"
               >
                 Add team member
               </h2>
-              <p className="text-[13px] text-zinc-500 mt-0.5">
+              <p className="text-xs sm:text-[13px] text-zinc-500 mt-0.5">
                 Create a new account for your workspace
               </p>
             </div>
@@ -215,11 +220,14 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          <div className="h-px bg-zinc-100 mx-5" />
+          <div className="h-px bg-zinc-100 mx-4 sm:mx-5" />
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="px-5 pt-4 pb-4 space-y-3">
-            {/* Role selector — controls endpoint only, not included in DTO */}
+          <form
+            onSubmit={handleSubmit}
+            className="px-4 sm:px-5 pt-4 pb-4 space-y-3"
+          >
+            {/* Role selector */}
             <div className="space-y-1.5">
               <label className="block text-[12px] font-medium text-zinc-600">
                 Role
@@ -255,8 +263,8 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
 
             <div className="h-px bg-zinc-100" />
 
-            {/* Row: Username + Email */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Username + Email - stack on mobile, side by side on sm+ */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label className="block text-[12px] font-medium text-zinc-600">
                   Username
@@ -310,8 +318,8 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            {/* Row: Password + Confirm */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Password + Confirm - stack on mobile, side by side on sm+ */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label className="block text-[12px] font-medium text-zinc-600">
                   Password
@@ -394,7 +402,7 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
             {/* Hint */}
             <div className="flex items-start gap-2 px-3 py-2.5 bg-zinc-50 rounded-lg border border-zinc-100">
               <Info size={13} className="text-zinc-400 mt-0.5 shrink-0" />
-              <p className="text-[12px] text-zinc-500 leading-relaxed">
+              <p className="text-[11px] sm:text-[12px] text-zinc-500 leading-relaxed">
                 Password must be 6–50 characters. The new user will receive an
                 invite email upon registration.
               </p>
@@ -411,16 +419,18 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
             )}
             {submitError && (
               <div className="px-3 py-2.5 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-[12px] text-red-600">{submitError}</p>
+                <p className="text-[11px] sm:text-[12px] text-red-600">
+                  {submitError}
+                </p>
               </div>
             )}
           </form>
 
-          <div className="h-px bg-zinc-100 mx-5" />
+          <div className="h-px bg-zinc-100 mx-4 sm:mx-5" />
 
           {/* Footer */}
-          <div className="flex items-center justify-between px-5 py-3.5">
-            <p className="text-[11px] text-zinc-400">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-5 py-3 sm:py-3.5">
+            <p className="text-[11px] text-zinc-400 text-center sm:text-left">
               <button
                 type="button"
                 className="hover:text-zinc-600 hover:underline focus:outline-none transition-colors"
@@ -435,7 +445,7 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
                 Privacy
               </button>
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-end">
               <button
                 type="button"
                 onClick={onClose}
@@ -465,5 +475,3 @@ export const AddUser: React.FC<AddUserProps> = ({ isOpen, onClose }) => {
     </>
   );
 };
-
-// STUDY how it works and types, Record Object
