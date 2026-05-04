@@ -29,30 +29,22 @@ const Header: React.FC<HeaderProps> = ({
   const [isNotificationOpen, setIsNotificationOpen] = useState<boolean>(false);
   const notificationRef = useRef<HTMLDivElement>(null);
 
-  // Mock notifications - replace with actual API call
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      message: "Your request has been approved",
-      timestamp: "2 hours ago",
-      type: "success",
-      isRead: false,
-    },
-    {
-      id: 2,
-      message: "New request pending review",
-      timestamp: "5 hours ago",
-      type: "info",
-      isRead: false,
-    },
-    {
-      id: 3,
-      message: "Request rejected - needs revision",
-      timestamp: "1 day ago",
-      type: "error",
-      isRead: true,
-    },
-  ]);
+  // Fetch notifications from backend API
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    const getAllMyNotifications = async () => {
+      try {
+        const res = await axiosInstance.get("/notification");
+        setNotifications(res.data);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data?.message);
+        }
+      }
+    };
+    getAllMyNotifications();
+  }, []);
 
   // Close notification dropdown when clicking outside
   useEffect(() => {
@@ -105,12 +97,19 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  const handleMarkAsRead = (id: number) => {
-    setNotifications(
-      notifications.map((notif) =>
-        notif.id === id ? { ...notif, isRead: true } : notif,
-      ),
-    );
+  const handleMarkAsRead = async (id: number) => {
+    try {
+      await axiosInstance.patch(`/notification/${id}`);
+      setNotifications(
+        notifications.map((notif) =>
+          notif.id === id ? { ...notif, isRead: true } : notif,
+        ),
+      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Failed to mark as read");
+      }
+    }
   };
 
   const handleClearAllNotifications = () => {
@@ -118,9 +117,18 @@ const Header: React.FC<HeaderProps> = ({
     setIsNotificationOpen(false);
   };
 
-  const handleDeleteNotification = (id: number, e: React.MouseEvent) => {
+  const handleDeleteNotification = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setNotifications(notifications.filter((notif) => notif.id !== id));
+    try {
+      await axiosInstance.delete(`/notification/${id}`);
+      setNotifications(notifications.filter((notif) => notif.id !== id));
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message || "Failed to delete notification",
+        );
+      }
+    }
   };
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -187,7 +195,8 @@ const Header: React.FC<HeaderProps> = ({
             {/* Notification Icon */}
             <div className="relative" ref={notificationRef}>
               <button
-                className="relative p-2 text-slate-600 hover:text-violet-600 rounded-full hover:bg-violet-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                className="
+                relative p-2 text-slate-600 hover:text-violet-600 rounded-full hover:bg-violet-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-300"
                 onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                 aria-label="Notifications"
               >
