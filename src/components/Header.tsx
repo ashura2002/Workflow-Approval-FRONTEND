@@ -14,7 +14,8 @@ interface HeaderProps {
 interface Notification {
   id: number;
   message: string;
-  timestamp: string;
+  timestamp?: string;
+  createdAt: string;
   type: "info" | "success" | "warning" | "error";
   isRead: boolean;
 }
@@ -280,7 +281,9 @@ const Header: React.FC<HeaderProps> = ({
                                 {notification.message}
                               </p>
                               <p className="text-xs text-gray-500 mt-1">
-                                {notification.timestamp}
+                                {new Date(
+                                  notification.createdAt,
+                                ).toLocaleString()}
                               </p>
                             </div>
 
