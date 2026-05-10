@@ -2,9 +2,9 @@ import axios from "axios";
 
 export const axiosInstance = axios.create({
   // production
-  // baseURL: import.meta.env.VITE_BASE_URL",
+  baseURL: import.meta.env.VITE_BASE_URL,
   // development
-  baseURL: "http://localhost:8000",
+  // baseURL: "http://localhost:8000",
 });
 
 // Request interceptor to attach token to headers
