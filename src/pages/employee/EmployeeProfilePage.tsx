@@ -433,8 +433,8 @@ export const EmployeeUserProfileForm: React.FC = () => {
                 <div className="space-y-1.5 sm:space-y-2">
                   <label className="text-sm font-semibold text-slate-700 flex flex-wrap items-center gap-2">
                     Address
-                    <span className="text-xs font-normal text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                      Optional
+                    <span className="text-xs font-normal text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full">
+                      Required
                     </span>
                   </label>
                   <textarea
