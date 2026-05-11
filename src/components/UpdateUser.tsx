@@ -130,7 +130,6 @@ export const UpdateUser: React.FC<UpdateUserProps> = ({
                 required
               >
                 <option value="">Select role</option>
-                <option value="Admin">Admin</option>
                 <option value="Employee">Employee</option>
                 <option value="HR">HR</option>
                 <option value="DepartmentHead">Department Head</option>
