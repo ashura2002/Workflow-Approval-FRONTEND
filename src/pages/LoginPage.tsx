@@ -33,7 +33,6 @@ export const LoginPage: React.FC = () => {
         password: formData.password,
       });
       toast.success(res.data.message || "Login Successfully!");
-      console.log("TOKEN:", res.data.accessToken);
       setFormData({
         username: "",
         password: "",
