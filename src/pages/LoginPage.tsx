@@ -33,11 +33,12 @@ export const LoginPage: React.FC = () => {
         password: formData.password,
       });
       toast.success(res.data.message || "Login Successfully!");
+      console.log("TOKEN:", res.data.accessToken);
       setFormData({
         username: "",
         password: "",
       });
-      const token = res.data.data;
+      const token = res.data.accessToken;
       auth.login(token);
       const decoded = jwtDecode<JwtTypes>(token);
       if (
